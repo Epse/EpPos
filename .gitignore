@@ -63,3 +63,6 @@ target/
 
 #File with my production passwords. U no Git!
 passwds.txt
+
+# Random python file
+db.sqlite3
