@@ -60,3 +60,6 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#File with my production passwords. U no Git!
+passwds.txt
