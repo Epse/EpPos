@@ -9,7 +9,7 @@ class Product(models.Model):
     product_stock = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return product_name
+        return self.product_name
 
 
 

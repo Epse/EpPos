@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset=utf-8 />
+	<title>Order</title>
+	<script type="text/javascript"
+	    src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+
+	<!--[if IE]>
+	    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	    rel="stylesheet"
+	    integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+	    crossorigin="anonymous">
+
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	    integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	    crossorigin="anonymous"></script>
+    </head>
+    <body>
+	<div class="container-fluid">
+	    <div class="row">
+	        <div class="col-sm-6 col-md-3">
+		   <iframe id="addition" src="../addition/" frameborder="1"></iframe>
+		</div>
+	        <div class="col-sm-6 col-md-9">
+		    <div class="row">
+			{% if product_list %}
+			    {% for product in product_list %}
+			    <div class="col-sm-6 col-md-3"><a class="btn btn-default" href="#"
+							    onclick="addProduct({{ product.product_id }})">
+				    {{ product.product_name }}</a></div>
+			    {% endfor %}
+			{% endif %}
+		    </div>
+		</div>
+	    </div>
+	</div>
+	<nav class="navbar navbar-inverse">
+	    <div class="container">
+		<div class="navbar-header">
+		    <span class="navbar-brand">EpPOS</span>
+		</div>
+		<div id="navbar">
+		    <ul class="nav navbar-nav">
+			<li><a href="#">Payed</a></li>
+			<li><a href="#">Reset</a></li>
+		    </ul>
+		</div>
+	    </div>
+	</nav>
+	<script>
+	    function addProduct(var productID) {
+		$('#addition').src = "../addition/" + productID;
+	</script>
+    </body>
+</html>
