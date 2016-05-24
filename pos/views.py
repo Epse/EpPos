@@ -8,5 +8,6 @@ def index(request):
 def order(request):
     return HttpResponse("Hello. Here you would be able to take an order")
 
-def addition(request):
+def addition(request, operation):
     return HttpResponse("Hello. Here you will be able to see the order, as well as the due amount")
+
