@@ -28,8 +28,10 @@
 		    <div class="row">
 			{% if product_list %}
 			    {% for product in product_list %}
-			    <div class="col-sm-6 col-md-3"><a class="btn btn-default" href="#"
-							    onclick="addProduct({{ product.product_id }})">
+			    <div class="col-sm-6 col-md-3"><a class="btn btn-default"
+					 href="javascript:void(0);"
+							    onclick="addProduct(
+							    {{ product.product_id }});">
 				    {{ product.product_name }}</a></div>
 			    {% endfor %}
 			{% endif %}
@@ -51,8 +53,9 @@
 	    </div>
 	</nav>
 	<script>
-	    function addProduct(var productID) {
+	    function addProduct(productID) {
 		$('#addition').src = "../addition/" + productID;
+	    }
 	</script>
     </body>
 </html>
