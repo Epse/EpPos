@@ -23,9 +23,9 @@ def addition(request, operation):
     if operation:
         if operation.isdecimal():
             #Find the product name for this ID
-           for x in product_list:
-               if x.product_id == operation:
-                   current_product = x
+            for x in product_list:
+                if x.product_id == operation:
+                    current_product = x
 
             order_list.append(current_product)
             currentOrder.setList(order_list)
@@ -34,7 +34,7 @@ def addition(request, operation):
             if operation == "reset":
                 currentOrder.setList([])
                 currentOrder.save()
-            else if operation == "payed":
+            elif operation == "payed":
                 #TODO: this should add the received money, for now it is equal to reset
                 currentOrder.setList([])
                 currentOrder.save()
