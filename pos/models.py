@@ -6,7 +6,7 @@ class Product(models.Model):
     product_name = models.CharField(max_length=100)
     product_price = models.DecimalField(max_digits=7,decimal_places=3)
     product_stockApplies = models.BooleanField()
-    product_stock = models.PositiveSmallIntegerField()
+    product_stock = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
         return self.product_name
