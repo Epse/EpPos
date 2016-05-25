@@ -16,5 +16,5 @@ def order(request):
     return HttpResponse(template.render(context, request))
 
 def addition(request, operation):
-    return HttpResponse("Hello. Here you will be able to see the order, as well as the due amount")
+    return HttpResponse("Hello. Here you will be able to see the order, as well as the due amount.\n operation is %s" %operation)
 

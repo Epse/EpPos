@@ -54,7 +54,8 @@
 	</nav>
 	<script>
 	    function addProduct(productID) {
-		$('#addition').src = "../addition/" + productID;
+		$("#addition").attr('src', "../addition/" + productID);
+		console.log($("#addition").attr('src'));
 	    }
 	</script>
     </body>
