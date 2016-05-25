@@ -16,7 +16,7 @@ def order(request):
     return HttpResponse(template.render(context, request))
 
 def addition(request, operation):
-    currentOrder = Order.objects.filter(order_user=request.user.username)[:1]
+    currentOrder = list(Order.objects.filter(order_user=request.user.username)[:1])[0]
     order_list = currentOrder.getList()
     product_list = Product.objects.all
 
@@ -32,11 +32,11 @@ def addition(request, operation):
             currentOrder.save()
         else:
             if operation == "reset":
-                currentOrder.setList([])
+                currentOrder.setList(list())
                 currentOrder.save()
             elif operation == "payed":
                 #TODO: this should add the received money, for now it is equal to reset
-                currentOrder.setList([])
+                currentOrder.setList(list())
                 currentOrder.save()
 
     template = loader.get_template('pos/addition.html')
