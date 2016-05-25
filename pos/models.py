@@ -1,4 +1,5 @@
 from django.db import models
+import json
 
 # Create your models here.
 class Product(models.Model):
@@ -11,6 +12,15 @@ class Product(models.Model):
     def __str__(self):
         return self.product_name
 
+class Order(models.Model):
+    order_user = models.CharField(max_length=50)
+    order_list = models.CharField(max_length=1000)
+
+    def setList(self, x):
+        self.order_list = json.dumps(x)
+
+    def getList(self):
+        return json.loads(self.order_list)
 
 
 #class User(models.Model):
