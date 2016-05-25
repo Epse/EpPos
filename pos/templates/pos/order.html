@@ -46,8 +46,8 @@
 		</div>
 		<div id="navbar">
 		    <ul class="nav navbar-nav">
-			<li><a href="#">Payed</a></li>
-			<li><a href="#">Reset</a></li>
+			<li><a href="javascript:void(0);" onclick="payed();">Payed</a></li>
+			<li><a href="javascript:void(0);" onclick="reset();">Reset</a></li>
 		    </ul>
 		</div>
 	    </div>
@@ -55,7 +55,15 @@
 	<script>
 	    function addProduct(productID) {
 		$("#addition").attr('src', "../addition/" + productID);
-		console.log($("#addition").attr('src'));
+		console.log("Ordered number: " + productID);
+	    }
+	    function reset() {
+		$("#addition").attr('src', "../addition/reset");
+		console.log("Reset addition");
+	    }
+	    function payed() {
+		$("#addition").attr('src', "../addition/payed");
+		console.log("Person payed");
 	    }
 	</script>
     </body>
