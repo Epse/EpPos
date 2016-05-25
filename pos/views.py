@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
-from .models import Product
+from .models import Product, Order
 
 # Create your views here.
 def index(request):
@@ -16,5 +16,32 @@ def order(request):
     return HttpResponse(template.render(context, request))
 
 def addition(request, operation):
-    return HttpResponse("Hello. Here you will be able to see the order, as well as the due amount.\n operation is %s" %operation)
+    currentOrder = Order.objects.filter(order_user=request.user.username)[:1]
+    order_list = currentOrder.getList()
+    product_list = Product.objects.all
+
+    if operation:
+        if operation.isdecimal():
+            #Find the product name for this ID
+           for x in product_list:
+               if x.product_id == operation:
+                   current_product = x
+
+            order_list.append(current_product)
+            currentOrder.setList(order_list)
+            currentOrder.save()
+        else:
+            if operation == "reset":
+                currentOrder.setList([])
+                currentOrder.save()
+            else if operation == "payed":
+                #TODO: this should add the received money, for now it is equal to reset
+                currentOrder.setList([])
+                currentOrder.save()
+
+    template = loader.get_template('pos/addition.html')
+    context = {
+            'order_list': order_list
+    }
+    return HttpResponse(template.render(context, request))
 
