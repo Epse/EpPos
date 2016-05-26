@@ -1,6 +1,9 @@
+import logging
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
+from django.core.exceptions import MultipleObjectsReturned
+import json
 from .models import Product, Order
 
 # Create your views here.
@@ -16,7 +19,11 @@ def order(request):
     return HttpResponse(template.render(context, request))
 
 def addition(request, operation):
-    currentOrder = list(Order.objects.filter(order_user=request.user.username)[:1])[0]
+    logging.info(request.user.username)
+    try:
+        currentOrder,_ = Order.objects.get_or_create(order_user=request.user.username,order_list=json.dumps(list()))
+    except MultipleObjectsReturned:
+        currentOrder = list(Order.objects.filter(order_user=request.user.username))[0]
     order_list = currentOrder.getList()
     product_list = Product.objects.all
 

@@ -22,6 +22,10 @@ class Order(models.Model):
     def getList(self):
         return json.loads(self.order_list)
 
+    #def __init__(self, user):
+        self.order_user = user
+        self.order_list = list()
+
 
 #class User(models.Model):
 #    user_id = models.AutoField(primary_key = True)
