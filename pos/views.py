@@ -34,21 +34,20 @@ def addition(request, operation):
                 if x.product_id == operation:
                     current_product = x
 
-            order_list.append(current_product)
-            currentOrder.setList(order_list)
-            currentOrder.save()
+            currentOrder.append(x.product_id)
         else:
             if operation == "reset":
-                currentOrder.setList(list())
-                currentOrder.save()
+                currentOrder.clearList()
             elif operation == "payed":
                 #TODO: this should add the received money, for now it is equal to reset
-                currentOrder.setList(list())
-                currentOrder.save()
+                currentOrder.clearList()
+
+    totalprice = currentOrder.order_totalprice
 
     template = loader.get_template('pos/addition.html')
     context = {
-            'order_list': order_list
+            'order_list': order_list,
+            'totalprice': totalprice,
     }
     return HttpResponse(template.render(context, request))
 

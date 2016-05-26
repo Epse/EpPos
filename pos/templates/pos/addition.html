@@ -24,11 +24,17 @@
 		{% if order_list %}
 		    {% for product in order_list %}
 		    <tr>
-			<td>{{ product.name }}</td>
-			<td><a href="javascript:void(0);" onclick="removeProduct({{ product.name }});">X</a></td>
+			<td>{{ product.product_name }}</td>
+			<td>{{ product.product_price }}</td>
+			<td><a href="javascript:void(0);" onclick="removeProduct({{ product.product_name }});">X</a></td>
 		    </tr>
 		    {% endfor %}
 		{% endif %}
+		<tr>
+		    <td>Total:</td>
+		    <td>{{ totalprice }}</td>
+		    <td></td>
+		</tr>
 	    </table>
 	</div>
 	<script>
