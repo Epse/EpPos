@@ -26,20 +26,16 @@ class Order(models.Model):
         return json.loads(self.order_list)
 
     def appendProduct(self, productID):
-        for product in Product.objects.all():
-            if product.product_id == productID:
-                currentProduct = product
+        currentProduct = Product.objects.get(product_id=productID)
         orderlist = json.loads(self.order_list)
-        orderlist.append(product.product_name)
+        orderlist.append(currentProduct.product_name)
         jsonorder = json.dumps(orderlist)
         self.order_list = jsonorder
-        self.order_totalprice += product.product_price
+        self.order_totalprice += currentProduct.product_price
         self.save()
         
     def removeProduct(self, productName):
-        for product in Product.objects.all():
-            if product.product_name == productName:
-                currentProduct = product
+        product = Product.objects.get(product_name=productName)
         currindex = self.order_list.index(product.product_name)
         del self.order_list[currindex]
         self.order_totalprice -= product.product_price

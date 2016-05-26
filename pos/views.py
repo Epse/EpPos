@@ -19,7 +19,6 @@ def order(request):
     return HttpResponse(template.render(context, request))
 
 def addition(request, operation):
-    logging.info(request.user.username)
     try:
         currentOrder,_ = Order.objects.get_or_create(order_user=request.user.username,order_list=json.dumps(list()))
     except MultipleObjectsReturned:
