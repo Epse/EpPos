@@ -18,7 +18,7 @@
 	    integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
 	    crossorigin="anonymous"></script>
     </head>
-    <body>
+    <body style="margin-top: 20px;">
 	<div class="container-fluid">
 	    <div class="row">
 	        <div class="col-sm-6 col-md-3">
@@ -32,7 +32,7 @@
 					 href="javascript:void(0);"
 							    onclick="addProduct(
 							    {{ product.product_id }});">
-				    {{ product.product_name }}</a></div>
+				    {{ product.product_name }}<br>{{ product.product_price }}</a></div>
 			    {% endfor %}
 			{% endif %}
 		    </div>

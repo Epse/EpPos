@@ -24,8 +24,7 @@
 		{% if order_list %}
 		    {% for product in order_list %}
 		    <tr>
-			<td>{{ product.product_name }}</td>
-			<td>{{ product.product_price }}</td>
+			<td>{{ product }}</td>
 			<td><a href="javascript:void(0);" onclick="removeProduct({{ product.product_name }});">X</a></td>
 		    </tr>
 		    {% endfor %}
@@ -33,7 +32,6 @@
 		<tr>
 		    <td>Total:</td>
 		    <td>{{ totalprice }}</td>
-		    <td></td>
 		</tr>
 	    </table>
 	</div>

@@ -24,17 +24,16 @@ def addition(request, operation):
         currentOrder,_ = Order.objects.get_or_create(order_user=request.user.username,order_list=json.dumps(list()))
     except MultipleObjectsReturned:
         currentOrder = list(Order.objects.filter(order_user=request.user.username))[0]
-    order_list = currentOrder.getList()
-    product_list = Product.objects.all
 
     if operation:
         if operation.isdecimal():
             #Find the product name for this ID
-            for x in product_list:
+            logging.warn("adding no: " + str(operation))
+            for x in Product.objects.all():
                 if x.product_id == operation:
                     current_product = x
 
-            currentOrder.append(x.product_id)
+            currentOrder.appendProduct(x.product_id)
         else:
             if operation == "reset":
                 currentOrder.clearList()
@@ -43,7 +42,7 @@ def addition(request, operation):
                 currentOrder.clearList()
 
     totalprice = currentOrder.order_totalprice
-
+    order_list = currentOrder.getList()
     template = loader.get_template('pos/addition.html')
     context = {
             'order_list': order_list,
