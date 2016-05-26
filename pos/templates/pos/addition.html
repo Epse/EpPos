@@ -20,20 +20,18 @@
     </head>
     <body>
 	<div class="container-fluid">
-	    <table>
-		{% if order_list %}
-		    {% for product in order_list %}
-		    <tr>
-			<td>{{ product }}</td>
-			<td><a href="javascript:void(0);" onclick="removeProduct({{ product.product_name }});">X</a></td>
-		    </tr>
-		    {% endfor %}
-		{% endif %}
-		<tr>
-		    <td>Total:</td>
-		    <td>{{ totalprice }}</td>
-		</tr>
-	    </table>
+	    {% if order_list %}
+		{% for product in order_list %}
+		<div class="row">
+		    <div class="col-xs-6">{{ product }}</div>
+		    <div class="col-xs-6"><a role="button" class="btn btn-danger" href="javascript:void(0);" onclick="removeProduct({{ product.product_name }});">X</a></div>
+		</div>
+		{% endfor %}
+	    {% endif %}
+	    <div class="row">
+		<div class="col-xs-6">Total:</div>
+		<div class="col-xs-6">{{ totalprice }}</div>
+	    </div>
 	</div>
 	<script>
 	    function removeProduct(product) { 
