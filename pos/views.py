@@ -27,13 +27,7 @@ def addition(request, operation):
 
     if operation:
         if operation.isdecimal():
-            #Find the product name for this ID
-            logging.warn("adding no: " + str(operation))
-            for x in Product.objects.all():
-                if x.product_id == operation:
-                    current_product = x
-
-            currentOrder.appendProduct(x.product_id)
+            currentOrder.appendProduct(operation)
         else:
             if operation == "reset":
                 currentOrder.clearList()
