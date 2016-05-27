@@ -1,45 +1,13 @@
-<!DOCTYPE html>
-<html>
-    <head>
-	<meta charset=utf-8 />
-	<title>Order</title>
-	<script type="text/javascript"
-	    src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-
-	<!--[if IE]>
-	    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
-	    rel="stylesheet"
-	    integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
-	    crossorigin="anonymous">
-
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
-	    integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-	    crossorigin="anonymous"></script>
-    </head>
-    <body>
-	<div class="container-fluid">
-	    {% if order_list %}
-		{% for product in order_list %}
-		<div class="row">
-		    <div class="col-xs-6">{{ product }}</div>
-		    <div class="col-xs-6"><a role="button" class="btn btn-danger"
-			    href="javascript:void(0);" onclick='removeProduct("{{ product }}");'>X</a></div>
-		</div>
-		{% endfor %}
-	    {% endif %}
-	    <div class="row">
-		<div class="col-xs-6">Total:</div>
-		<div class="col-xs-6">{{ totalprice }}</div>
-	    </div>
-	</div>
-	<script>
-	    function removeProduct(product) { 
-		console.log(window.location);
-		console.log("{% url 'addition' '' %}");
-		window.location = "{%url 'addition' '' %}" + product;
-	    }
-	</script>
-    </body>
-</html>
+{% if order_list %}
+    {% for product in order_list %}
+    <div class="row">
+	<div class="col-xs-6">{{ product }}</div>
+	<div class="col-xs-6"><a role="button" class="btn btn-danger"
+		href="javascript:void(0);" onclick='removeProduct("{{ product }}");'>X</a></div>
+    </div>
+    {% endfor %}
+{% endif %}
+<div class="row">
+    <div class="col-xs-6">Total:</div>
+    <div class="col-xs-6">{{ totalprice }}</div>
+</div>

@@ -21,8 +21,7 @@
     <body style="margin-top: 20px;">
 	<div class="container-fluid">
 	    <div class="row">
-	        <div class="col-sm-6 col-md-4">
-		   <iframe id="addition" src="../addition/" frameborder="0"></iframe>
+	        <div id="additiondiv" class="col-sm-6 col-md-4">
 		</div>
 	        <div class="col-sm-6 col-md-8">
 		    <div class="row">
@@ -54,17 +53,27 @@
 	</nav>
 	<script>
 	    function addProduct(productID) {
-		$("#addition").attr('src', "../addition/" + productID);
+		$('#additiondiv').load("{% url 'addition' '' %}" + productID);
 		console.log("Ordered number: " + productID);
 	    }
 	    function reset() {
-		$("#addition").attr('src', "../addition/reset");
+		$('#additiondiv').load("{% url 'addition' 'reset' %}");
 		console.log("Reset addition");
 	    }
 	    function payed() {
-		$("#addition").attr('src', "../addition/payed");
+		$('#additiondiv').load("{% url 'addition' 'payed' %}");
 		console.log("Person payed");
 	    }
+	    function removeProduct(product) { 
+		console.log(window.location);
+		console.log("{% url 'addition' '' %}");
+		$('#additiondiv').load("{%url 'addition' '' %}" + product);
+	    }
+
+	    $(function() {
+		// This shallst load /addition in its div
+		$('#additiondiv').load("{% url 'addition' '' %}");
+	    });
 	</script>
     </body>
 </html>
