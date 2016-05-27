@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from django.core.exceptions import MultipleObjectsReturned
+from django.contrib.auth.decorators import login_required
 import json
 from .models import Product, Order
 
@@ -10,6 +11,7 @@ from .models import Product, Order
 def index(request):
     return HttpResponse("Hello World. This is the pos starting page")
 
+@login_required
 def order(request):
     product_list = Product.objects.all
     template = loader.get_template('pos/order.html')
