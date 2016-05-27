@@ -18,7 +18,31 @@
 	    integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
 	    crossorigin="anonymous"></script>
     </head>
-    <body style="margin-top: 20px;">
+    <body>
+	<nav class="navbar navbar-inverse">
+	    <div class="container">
+		<div class="navbar-header">
+		    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+							    data-target="#navbar"
+							    aria-expanded="false"
+	   aria-controls="navbar">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		    </button>
+		    <span class="navbar-brand">EpPOS</span>
+		</div>
+		<div id="navbar" class="collapse navbar-collapse">
+		    <ul class="nav navbar-nav">
+			<li><a href="javascript:void(0);" onclick="payed();" role="button">Payed</a></li>
+			<li><a href="javascript:void(0);" onclick="reset();" role="button">Reset</a></li>
+			<li><a href="{% url 'logout' %}">Log Out</a></li>
+			<li><a href="../../admin">Admin</a></li>
+		    </ul>
+		</div>
+	    </div>
+	</nav>
 	<div class="container-fluid">
 	    <div class="row">
 	        <div id="additiondiv" class="col-sm-6 col-md-4">
@@ -38,19 +62,6 @@
 		</div>
 	    </div>
 	</div>
-	<nav class="navbar navbar-inverse">
-	    <div class="container">
-		<div class="navbar-header">
-		    <span class="navbar-brand">EpPOS</span>
-		</div>
-		<div id="navbar">
-		    <ul class="nav navbar-nav">
-			<li><a href="javascript:void(0);" onclick="payed();" role="button">Payed</a></li>
-			<li><a href="javascript:void(0);" onclick="reset();" role="button">Reset</a></li>
-		    </ul>
-		</div>
-	    </div>
-	</nav>
 	<script>
 	    function addProduct(productID) {
 		$('#additiondiv').load("{% url 'addition' '' %}" + productID);
