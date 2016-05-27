@@ -16,7 +16,7 @@ class Product(models.Model):
 class Order(models.Model):
     order_user = models.CharField(max_length=50)
     order_list = models.CharField(max_length=1000)
-    order_totalprice = models.PositiveSmallIntegerField(default=0)
+    order_totalprice = models.DecimalField(max_digits=7,decimal_places=3,default=0)
 
 #class User(models.Model):
 #    user_id = models.AutoField(primary_key = True)

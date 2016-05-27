@@ -24,7 +24,8 @@
 		{% for product in order_list %}
 		<div class="row">
 		    <div class="col-xs-6">{{ product }}</div>
-		    <div class="col-xs-6"><a role="button" class="btn btn-danger" href="javascript:void(0);" onclick="removeProduct({{ product.product_name }});">X</a></div>
+		    <div class="col-xs-6"><a role="button" class="btn btn-danger"
+			    href="javascript:void(0);" onclick='removeProduct("{{ product }}");'>X</a></div>
 		</div>
 		{% endfor %}
 	    {% endif %}
@@ -36,6 +37,8 @@
 	<script>
 	    function removeProduct(product) { 
 		console.log(window.location);
+		console.log("{% url 'addition' '' %}");
+		window.location = "{%url 'addition' '' %}" + product;
 	    }
 	</script>
     </body>

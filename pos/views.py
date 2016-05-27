@@ -27,7 +27,7 @@ def addition(request, operation):
         currentOrder = list(Order.objects.filter(order_user=request.user.username))[0]
         logging.warn("there were MultipleObjectsReturned")
 
-    if currentOrder == None:
+    if currentOrder is None:
         raise Exception("currentOrder is empty")
     if operation:
         if operation.isdecimal():
@@ -35,17 +35,28 @@ def addition(request, operation):
             tmpproduct = Product.objects.get(product_id=operation)
             tmplist.append(tmpproduct.product_name)
             currentOrder.order_list = json.dumps(tmplist)
-            currentOrder.order_totalprice += tmpproduct.product_price
+            currentOrder.order_totalprice = tmpproduct.product_price + currentOrder.order_totalprice
+            currentOrder.save()
+        elif operation == "reset":
+            currentOrder.order_list = json.dumps(list())
+            currentOrder.order_totalprice = 0
+            currentOrder.save()
+        elif operation == "payed":
+            #TODO: this should add the received money, for now it is equal to reset
+            currentOrder.order_list = json.dumps(list())
+            currentOrder.order_totalprice = 0
             currentOrder.save()
         else:
-            if operation == "reset":
-                currentOrder.order_list = json.dumps(list())
-                currentOrder.order_totalprice = 0
-                currentOrder.save()
-            elif operation == "payed":
-                #TODO: this should add the received money, for now it is equal to reset
-                currentOrder.order_list = json.dumps(list())
-                currentOrder.order_totalprice = 0
+            tmpproduct = Product.objects.filter(product_name = operation).first()
+            if tmpproduct is not None:
+                tmplist = json.loads(currentOrder.order_list)
+                i = tmplist.index(tmpproduct.product_name) 
+                del tmplist[i]
+                currentOrder.order_list = json.dumps(tmplist)
+                currentOrder.order_totalprice = currentOrder.order_totalprice - tmpproduct.product_price
+                if currentOrder.order_totalprice < 0:
+                    logging.warn("prices below 0!")
+                    currentOrder.order_totalprice = 0
                 currentOrder.save()
 
     totalprice = currentOrder.order_totalprice
