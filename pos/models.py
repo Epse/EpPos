@@ -18,34 +18,6 @@ class Order(models.Model):
     order_list = models.CharField(max_length=1000)
     order_totalprice = models.PositiveSmallIntegerField(default=0)
 
-    def setList(self, x):
-        self.order_list = json.dumps(x)
-        self.save()
-
-    def getList(self):
-        return json.loads(self.order_list)
-
-    def appendProduct(self, productID):
-        currentProduct = Product.objects.get(product_id=productID)
-        orderlist = json.loads(self.order_list)
-        orderlist.append(currentProduct.product_name)
-        jsonorder = json.dumps(orderlist)
-        self.order_list = jsonorder
-        self.order_totalprice += currentProduct.product_price
-        self.save()
-        
-    def removeProduct(self, productName):
-        product = Product.objects.get(product_name=productName)
-        currindex = self.order_list.index(product.product_name)
-        del self.order_list[currindex]
-        self.order_totalprice -= product.product_price
-        self.save()
-
-    def clearList(self):
-        self.order_list = json.dumps(list())
-        self.order_totalprice = 0
-        self.save()
-
 #class User(models.Model):
 #    user_id = models.AutoField(primary_key = True)
 #    user_name = models.CharField(max_length=50)

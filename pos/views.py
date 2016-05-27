@@ -22,22 +22,34 @@ def order(request):
 
 def addition(request, operation):
     try:
-        currentOrder,_ = Order.objects.get_or_create(order_user=request.user.username,order_list=json.dumps(list()))
+        currentOrder,_ = Order.objects.get_or_create(order_user=request.user.username)
     except MultipleObjectsReturned:
         currentOrder = list(Order.objects.filter(order_user=request.user.username))[0]
+        logging.warn("there were MultipleObjectsReturned")
 
+    if currentOrder == None:
+        raise Exception("currentOrder is empty")
     if operation:
         if operation.isdecimal():
-            currentOrder.appendProduct(operation)
+            tmplist = json.loads(currentOrder.order_list)
+            tmpproduct = Product.objects.get(product_id=operation)
+            tmplist.append(tmpproduct.product_name)
+            currentOrder.order_list = json.dumps(tmplist)
+            currentOrder.order_totalprice += tmpproduct.product_price
+            currentOrder.save()
         else:
             if operation == "reset":
-                currentOrder.clearList()
+                currentOrder.order_list = json.dumps(list())
+                currentOrder.order_totalprice = 0
+                currentOrder.save()
             elif operation == "payed":
                 #TODO: this should add the received money, for now it is equal to reset
-                currentOrder.clearList()
+                currentOrder.order_list = json.dumps(list())
+                currentOrder.order_totalprice = 0
+                currentOrder.save()
 
     totalprice = currentOrder.order_totalprice
-    order_list = currentOrder.getList()
+    order_list = json.loads(currentOrder.order_list)
     template = loader.get_template('pos/addition.html')
     context = {
             'order_list': order_list,
