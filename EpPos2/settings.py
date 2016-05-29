@@ -25,7 +25,8 @@ SECRET_KEY = 'oybwg_apb%v6^d$ff2mvhx%#hl)s2^6k3uuz=#b*8-j0hty6$3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'epsepos.ddns.net', '192.168.0.170', 192.168.0.245']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites'
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -120,3 +124,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
