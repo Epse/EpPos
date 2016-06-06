@@ -1,6 +1,7 @@
 # EpPos
 EpPos (name subject to change, suggestions welcome) is a basic Django (python)-based Point Of Sale
-system. 
+system that is designed to be platform-independant (it runs on the web) and completely mobile- and
+touch-friendly. 
 
 **Contributors: see the CONTRIB.md file!**
 
