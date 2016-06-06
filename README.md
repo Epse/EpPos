@@ -33,7 +33,7 @@ EpPOS (although you may always ask) you can for sure just fork it. Details are i
 we use the Apache license.
 
 ## Maintainers aka. Who Do I Talk To?
-@Epse aka. Stef Pletinck
+Epse aka. Stef Pletinck
 
 ## Hall of fame
 *God this is empty. Any people with accepted pull requests will end up right here.*
