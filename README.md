@@ -25,8 +25,7 @@ You found a bug! Congratulations! You can report this issue on or issue tracker 
 forever grateful if you could possible be so kind as to include a server log and/or web console log.
 
 ## But I can fix that myself!
-You are absolutely welcome! Clone the repo, make a new branch (preferrably following this naming
-scheme: `issueID.somename`) fix the issue and send me a pull request!
+Absolutely marvellous! Have a look in the CONTRIB.md file for info about contributing!
 
 ## I want to make a spinoff!
 You absolutely may. If you think what you want in a POS is not something that is in the scope of
