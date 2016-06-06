@@ -2,6 +2,8 @@
 EpPos (name subject to change, suggestions welcome) is a basic Django (python)-based Point Of Sale
 system. 
 
+**Contributors: see the CONTRIB.md file!**
+
 ## Hold on Epse, what on earth is that POS shenanigans about?
 Well, glad you asked. A POS system is a program that is used by salespeople or, more in the scope of
 this particular one, waiters at a pub or restaurant. They simple click on what you ordered, it is
