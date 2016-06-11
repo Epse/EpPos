@@ -25,12 +25,3 @@ class Order(models.Model):
     order_list = models.CharField(max_length=1000)
     order_totalprice = models.DecimalField(max_digits=7,decimal_places=3,default=0)
 
-#class User(models.Model):
-#    user_id = models.AutoField(primary_key = True)
-#    user_name = models.CharField(max_length=50)
-#    user_isAdmin = models.BooleanField()
-#
-#    def __str__(self):
-#        return user_name
-#
-
