@@ -2,10 +2,13 @@ from django.db import models
 from django.core.exceptions import ValidationError
 import logging
 import json
+import re
 
 def validate_product_name(prodname):
     regex_string = r'^([A-Za-z0-9\.\+\(\)\-\_])+$'
-    if regex.match(regex_string, prodname) == None:
+    search = re.compile(regex_string).search
+    result = bool(search(prodname))
+    if result:
         raise ValidationError("Please only use letters, numbers and .+()-_ symbols.")
 
 
