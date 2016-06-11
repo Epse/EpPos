@@ -26,4 +26,4 @@ class Order(models.Model):
     order_totalprice = models.DecimalField(max_digits=7,decimal_places=3,default=0)
 
 class Cash(models.Model):
-    cash_amount = models.DecimalField(max_digits=7, decimal_places=3)
+    cash_amount = models.DecimalField(max_digits=7, decimal_places=3,default=0)
