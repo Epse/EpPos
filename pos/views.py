@@ -5,7 +5,7 @@ from django.template import loader
 from django.core.exceptions import MultipleObjectsReturned
 from django.contrib.auth.decorators import login_required
 import json
-from .models import Product, Order
+from .models import Product, Order, Cash
 
 # Create your views here.
 def index(request):
@@ -21,6 +21,7 @@ def order(request):
     return HttpResponse(template.render(context, request))
 
 def addition(request, operation):
+    succesfully_payed = 0 # 0 for no payment, 1 for success and -1 for failure
     try:
         currentOrder,_ = Order.objects.get_or_create(order_user=request.user.username)
     except MultipleObjectsReturned:
@@ -43,9 +44,19 @@ def addition(request, operation):
             currentOrder.save()
         elif operation == "payed":
             #TODO: this should add the received money, for now it is equal to reset
+            #      but with stocktracking
+            cash = Cash.get_or_create(id=0)
+            for x in json.loads(currentOrder.order_list):
+                tmpproduct = Product.objects.get(product_name=x)
+                if tmpproduct.product_stockApplies:
+                    tmpproduct.product_stock = tmpproduct.product_stock - 1
+                tmpproduct.save()
+                cash.cash_amount = cash.cash_amount + tmpproduct.product_price
             currentOrder.order_list = json.dumps(list())
             currentOrder.order_totalprice = 0
             currentOrder.save()
+            cash.save()
+            succesfully_payed = 1
         else:
             tmpproduct = Product.objects.filter(product_name = operation).first()
             if tmpproduct is not None:
@@ -61,10 +72,13 @@ def addition(request, operation):
 
     totalprice = currentOrder.order_totalprice
     order_list = json.loads(currentOrder.order_list)
+    cash = Cash.get_or_create(id=0)
     template = loader.get_template('pos/addition.html')
     context = {
             'order_list': order_list,
             'totalprice': totalprice,
+            'cash': cash,
+            'succesfully_payed': 'succesfully_payed,
     }
     return HttpResponse(template.render(context, request))
 
