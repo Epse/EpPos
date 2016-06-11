@@ -78,7 +78,7 @@ def addition(request, operation):
             'order_list': order_list,
             'totalprice': totalprice,
             'cash': cash,
-            'succesfully_payed': 'succesfully_payed,
+            'succesfully_payed': succesfully_payed,
     }
     return HttpResponse(template.render(context, request))
 
