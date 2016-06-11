@@ -11,7 +11,6 @@ def validate_product_name(prodname):
     if result:
         raise ValidationError("Please only use letters, numbers and .+()-_ symbols.")
 
-
 # Create your models here.
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
@@ -22,6 +21,14 @@ class Product(models.Model):
 
     def __str__(self):
         return self.product_name
+
+    def clean(self):
+        validate_product_name(self.product_name)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.full_clean()
+        super(Product, self).save(*args, **kwargs)
 
 class Order(models.Model):
     order_user = models.CharField(max_length=50)
