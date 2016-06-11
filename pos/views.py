@@ -43,6 +43,12 @@ def addition(request, operation):
             currentOrder.save()
         elif operation == "payed":
             #TODO: this should add the received money, for now it is equal to reset
+            #      but with stocktracking
+            for x in json.loads(currentOrder.order_list):
+                tmpproduct = Product.objects.get(product_name=x)
+                if tmpproduct.product_stockApplies:
+                    tmpproduct.product_stock = tmpproduct.product_stock - 1
+                tmpproduct.save()
             currentOrder.order_list = json.dumps(list())
             currentOrder.order_totalprice = 0
             currentOrder.save()
