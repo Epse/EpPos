@@ -45,7 +45,7 @@ def addition(request, operation):
         elif operation == "payed":
             #TODO: this should add the received money, for now it is equal to reset
             #      but with stocktracking
-            cash = Cash.get_or_create(id=0)
+            cash = Cash.objects.get_or_create(id=0)
             for x in json.loads(currentOrder.order_list):
                 tmpproduct = Product.objects.get(product_name=x)
                 if tmpproduct.product_stockApplies:
@@ -72,7 +72,7 @@ def addition(request, operation):
 
     totalprice = currentOrder.order_totalprice
     order_list = json.loads(currentOrder.order_list)
-    cash = Cash.get_or_create(id=0)
+    cash = Cash.objects.get_or_create(id=0)
     template = loader.get_template('pos/addition.html')
     context = {
             'order_list': order_list,
