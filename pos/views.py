@@ -5,7 +5,7 @@ from django.template import loader
 from django.core.exceptions import MultipleObjectsReturned
 from django.contrib.auth.decorators import login_required
 import json
-from .models import Product, Order
+from .models import Product, Order, Cash
 
 # Create your views here.
 def index(request):
@@ -44,14 +44,17 @@ def addition(request, operation):
         elif operation == "payed":
             #TODO: this should add the received money, for now it is equal to reset
             #      but with stocktracking
+            cash = Cash.get_or_create(id=0)
             for x in json.loads(currentOrder.order_list):
                 tmpproduct = Product.objects.get(product_name=x)
                 if tmpproduct.product_stockApplies:
                     tmpproduct.product_stock = tmpproduct.product_stock - 1
                 tmpproduct.save()
+                cash.cash_amount = cash.cash_amount + tmpproduct.product_price
             currentOrder.order_list = json.dumps(list())
             currentOrder.order_totalprice = 0
             currentOrder.save()
+            cash.save()
         else:
             tmpproduct = Product.objects.filter(product_name = operation).first()
             if tmpproduct is not None:
