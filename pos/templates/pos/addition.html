@@ -1,10 +1,10 @@
-{% if succesfully_payed == 1 %}
+{% if succesfully_payed %}
     <div class="alert alert-success alert-dismissable hidden" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         Payment made. Cash register now contains: {{ cash }}
     </div>
 {% endif %}
-{% if succesfully_payed == -1 %}
+{% if payment_error %}
     <div class="alert alert-danger alert-dismissable hidden" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         Payment failed. Cash register now contains: {{ cash }}
