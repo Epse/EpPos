@@ -21,7 +21,8 @@ def order(request):
     return HttpResponse(template.render(context, request))
 
 def addition(request, operation):
-    succesfully_payed = 0 # 0 for no payment, 1 for success and -1 for failure
+    succesfully_payed = False
+    payment_error = False
     try:
         currentOrder,_ = Order.objects.get_or_create(order_user=request.user.username)
     except MultipleObjectsReturned:
@@ -54,7 +55,7 @@ def addition(request, operation):
             currentOrder.order_list = json.dumps(list())
             currentOrder.order_totalprice = 0
             currentOrder.save()
-            succesfully_payed = 1
+            succesfully_payed = True
         else:
             tmpproduct = Product.objects.filter(product_name = operation).first()
             if tmpproduct is not None:
@@ -77,5 +78,6 @@ def addition(request, operation):
             'totalprice': totalprice,
             'cash': cash,
             'succesfully_payed': succesfully_payed,
+            'payment_error': payment_error,
     }
     return HttpResponse(template.render(context, request))
