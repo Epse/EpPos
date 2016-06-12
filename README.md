@@ -18,7 +18,7 @@ be accessed to the `ALLOWED_HOSTS` variable. Then run `python manage.py migrate`
 manage.py createsuperuser` to create a new admin account which you can use to manage the system and
 add new users.
 Then set it up like you would set up any normal Django application, we recommend using
-[uWSGI][http://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html] with nginx.
+[uWSGI](http://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html) with nginx.
 
 ## Beauty. Or no! A beast! What now?
 You found a bug! Congratulations! You can report this issue on or issue tracker on GitHub. I will be
