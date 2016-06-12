@@ -43,25 +43,23 @@ def addition(request, operation):
             currentOrder.order_totalprice = 0
             currentOrder.save()
         elif operation == "payed":
-            #TODO: this should add the received money, for now it is equal to reset
-            #      but with stocktracking
-            cash = Cash.objects.get_or_create(id=0)
+            cash, _ = Cash.objects.get_or_create(id=0)
             for x in json.loads(currentOrder.order_list):
                 tmpproduct = Product.objects.get(product_name=x)
                 if tmpproduct.product_stockApplies:
                     tmpproduct.product_stock = tmpproduct.product_stock - 1
                 tmpproduct.save()
                 cash.cash_amount = cash.cash_amount + tmpproduct.product_price
+                cash.save()
             currentOrder.order_list = json.dumps(list())
             currentOrder.order_totalprice = 0
             currentOrder.save()
-            cash.save()
             succesfully_payed = 1
         else:
             tmpproduct = Product.objects.filter(product_name = operation).first()
             if tmpproduct is not None:
                 tmplist = json.loads(currentOrder.order_list)
-                i = tmplist.index(tmpproduct.product_name) 
+                i = tmplist.index(tmpproduct.product_name)
                 del tmplist[i]
                 currentOrder.order_list = json.dumps(tmplist)
                 currentOrder.order_totalprice = currentOrder.order_totalprice - tmpproduct.product_price
@@ -81,4 +79,3 @@ def addition(request, operation):
             'succesfully_payed': succesfully_payed,
     }
     return HttpResponse(template.render(context, request))
-
