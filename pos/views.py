@@ -21,8 +21,10 @@ def order(request):
     return HttpResponse(template.render(context, request))
 
 def addition(request, operation):
+    cash, _ = Cash.objects.get_or_create(id=0)
     succesfully_payed = False
     payment_error = False
+    amountAdded = 0
     try:
         currentOrder,_ = Order.objects.get_or_create(order_user=request.user.username)
     except MultipleObjectsReturned:
@@ -44,13 +46,13 @@ def addition(request, operation):
             currentOrder.order_totalprice = 0
             currentOrder.save()
         elif operation == "payed":
-            cash, _ = Cash.objects.get_or_create(id=0)
             for x in json.loads(currentOrder.order_list):
                 tmpproduct = Product.objects.get(product_name=x)
                 if tmpproduct.product_stockApplies:
                     tmpproduct.product_stock = tmpproduct.product_stock - 1
                 tmpproduct.save()
                 cash.cash_amount = cash.cash_amount + tmpproduct.product_price
+                amountAdded = amountAdded + tmpproduct.product_price
                 cash.save()
             currentOrder.order_list = json.dumps(list())
             currentOrder.order_totalprice = 0
@@ -71,7 +73,6 @@ def addition(request, operation):
 
     totalprice = currentOrder.order_totalprice
     order_list = json.loads(currentOrder.order_list)
-    cash = Cash.objects.get_or_create(id=0)
     template = loader.get_template('pos/addition.html')
     context = {
             'order_list': order_list,
@@ -79,5 +80,6 @@ def addition(request, operation):
             'cash': cash,
             'succesfully_payed': succesfully_payed,
             'payment_error': payment_error,
+            'amount_added': amountAdded,
     }
     return HttpResponse(template.render(context, request))
