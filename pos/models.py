@@ -5,11 +5,11 @@ import json
 import re
 
 def validate_product_name(prodname):
-    regex_string = r'^([A-Za-z0-9\.\+\(\)\-\_])+$'
+    regex_string = r'^\w+$'
     search = re.compile(regex_string).search
     result = bool(search(prodname))
-    if result:
-        raise ValidationError("Please only use letters, numbers and .+()-_ symbols.")
+    if not result:
+        raise ValidationError("Please only use letters, numbers and underscores.")
 
 # Create your models here.
 class Product(models.Model):
