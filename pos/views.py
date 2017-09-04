@@ -26,7 +26,7 @@ def addition(request, operation):
     payment_error = False
     amountAdded = 0
     try:
-        currentOrder,_ = Order.objects.get_or_create(order_user=request.user.username)
+        currentOrder, _ = Order.objects.get_or_create(order_user=request.user.username)
     except MultipleObjectsReturned:
         currentOrder = list(Order.objects.filter(order_user=request.user.username))[0]
         logging.warn("there were MultipleObjectsReturned")
@@ -67,7 +67,7 @@ def addition(request, operation):
                 currentOrder.order_list = json.dumps(tmplist)
                 currentOrder.order_totalprice = currentOrder.order_totalprice - tmpproduct.product_price
                 if currentOrder.order_totalprice < 0:
-                    logging.warn("prices below 0!")
+                    logging.warn("prices below 0! You might be running in to the 10 digit total order price limit")
                     currentOrder.order_totalprice = 0
                 currentOrder.save()
 
