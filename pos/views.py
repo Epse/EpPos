@@ -26,14 +26,12 @@ def addition(request, operation):
     succesfully_payed = False
     payment_error = False
     amountAdded = 0
-    try:
-        currentOrder, _ = Order.objects.get_or_create(order_user=request.user.username)
-    except MultipleObjectsReturned:
-        currentOrder = list(Order.objects.filter(order_user=request.user.username))[0]
-        logging.warn("there were MultipleObjectsReturned")
+    q = Order.objects.filter(order_user=request.user.username, order_done=False).order_by('order_lastChange')
+    if q.count() >= 1:
+        currentOrder = q[0]
+    else:
+        currentOrder = Order.objects.create(order_user=request.user.username)
 
-    if currentOrder is None:
-        raise Exception("currentOrder is empty")
     if operation:
         if operation.isdecimal():
             tmplist = helper.parseJsonProductList(currentOrder.order_list)
@@ -55,9 +53,9 @@ def addition(request, operation):
                 cash.cash_amount = cash.cash_amount + product.product_price
                 amountAdded = amountAdded + product.product_price
                 cash.save()
-            currentOrder.order_list = "[]"
-            currentOrder.order_totalprice = 0
+            currentOrder.order_done = True
             currentOrder.save()
+            currentOrder = Order.objects.create(order_user=request.user.username)
             succesfully_payed = True
         else:
             tmpproduct = Product.objects.filter(product_name = operation).first()

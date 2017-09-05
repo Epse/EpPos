@@ -30,7 +30,7 @@ def productListToJson(productList):
         cleanDict = product.__dict__
         # This state thing is a hidden Django object that can't be serialized and doesn't need to be either
         del cleanDict['_state']
-        cleanDict['product_price'] = float(cleanDict['product_price'])
+        cleanDict['product_price'] = str(cleanDict['product_price'])
         jsonString += json.dumps(cleanDict)
 
     jsonString += "]"
