@@ -30,9 +30,20 @@ class Product(models.Model):
             self.full_clean()
         super(Product, self).save(*args, **kwargs)
 
+    def toJson(self):
+        return json.dumps(self.__jsonDict__)
+
+    def fromJson(json):
+        jsonDict = json.loads(json)
+        self.product_id = jsonDict['product_id']
+        self.product_name = jsonDict['product_name']
+        self.product_price = jsonDict['product_price']
+        self.product_stockApplies = jsonDict['product_stockApplies']
+        self.product_stock = jsonDict['product_stock']
+
 class Order(models.Model):
     order_user = models.CharField(max_length=50)
-    order_list = models.CharField(max_length=1000)
+    order_list = models.CharField(max_length=10000)
     order_totalprice = models.DecimalField(max_digits=10,decimal_places=2,default=0)
 
 class Cash(models.Model):
