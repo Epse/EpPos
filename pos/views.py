@@ -38,7 +38,7 @@ def addition(request, operation):
             tmpproduct = Product.objects.get(product_id=operation)
             tmplist.append(tmpproduct)
             currentOrder.order_list = helper.productListToJson(tmplist)
-            currentOrder.order_totalprice = decimal.Decimal(tmpproduct.product_price) + currentOrder.order_totalprice
+            currentOrder.order_totalprice = ( decimal.Decimal(tmpproduct.product_price) + currentOrder.order_totalprice ).quantize(decimal.Decimal('0.01'))
             currentOrder.save()
         elif operation == "reset":
             currentOrder.order_list = "[]"
@@ -64,7 +64,7 @@ def addition(request, operation):
                 i = tmplist.index(tmpproduct)
                 del tmplist[i]
                 currentOrder.order_list = helper.productListToJson(tmplist)
-                currentOrder.order_totalprice = currentOrder.order_totalprice - tmpproduct.product_price
+                currentOrder.order_totalprice = ( currentOrder.order_totalprice - tmpproduct.product_price ).quantize(decimal.Decimal('0.01'))
                 if currentOrder.order_totalprice < 0:
                     logging.warn("prices below 0! You might be running in to the 10 digit total order price limit")
                     currentOrder.order_totalprice = 0

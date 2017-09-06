@@ -15,7 +15,7 @@ def validate_product_name(prodname):
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
     product_name = models.CharField(max_length=100, validators=[validate_product_name])
-    product_price = models.DecimalField(max_digits=7,decimal_places=3)
+    product_price = models.DecimalField(max_digits=7,decimal_places=2)
     product_stockApplies = models.BooleanField()
     product_stock = models.PositiveSmallIntegerField(default=0)
 

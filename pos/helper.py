@@ -11,7 +11,7 @@ def parseJsonProductList(jsonstring):
         product = Product()
         product.product_id = productDict['product_id']
         product.product_name = productDict['product_name']
-        product.product_price = decimal.Decimal(productDict['product_price'])
+        product.product_price = decimal.Decimal(productDict['product_price']).quantize(decimal.Decimal('0.01'))
         product.product_stock = productDict['product_stock']
         product.product_stockApplies = productDict['product_stockApplies']
         resultList.append(product)
