@@ -33,6 +33,7 @@ def addition(request, operation):
         currentOrder = Order.objects.create(order_user=request.user.username)
 
     if operation:
+        print(operation)
         if operation.isdecimal():
             tmplist = helper.parseJsonProductList(currentOrder.order_list)
             tmpproduct = Product.objects.get(product_id=operation)
