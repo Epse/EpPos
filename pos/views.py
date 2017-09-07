@@ -25,54 +25,60 @@ def addition(request, operation):
     cash, _ = Cash.objects.get_or_create(id=0)
     succesfully_payed = False
     payment_error = False
-    amountAdded = 0
+    amount_added = 0
     q = Order.objects.filter(order_user=request.user.username, order_done=False).order_by('order_lastChange')
     if q.count() >= 1:
-        currentOrder = q[0]
+        current_order = q[0]
     else:
-        currentOrder = Order.objects.create(order_user=request.user.username)
+        current_order = Order.objects.create(order_user=request.user.username)
 
     if operation:
-        print(operation)
         if operation.isdecimal():
-            tmplist = helper.parseJsonProductList(currentOrder.order_list)
-            tmpproduct = Product.objects.get(product_id=operation)
-            tmplist.append(tmpproduct)
-            currentOrder.order_list = helper.productListToJson(tmplist)
-            currentOrder.order_totalprice = ( decimal.Decimal(tmpproduct.product_price) + currentOrder.order_totalprice ).quantize(decimal.Decimal('0.01'))
-            currentOrder.save()
-        elif operation == "reset":
-            currentOrder.order_list = "[]"
-            currentOrder.order_totalprice = 0
-            currentOrder.save()
-        elif operation == "payed":
-            for product in helper.parseJsonProductList(currentOrder.order_list):
-                productInDatabase = Product.objects.get(product_name=product.product_name)
-                if productInDatabase.product_stockApplies:
-                    productInDatabase.product_stock = productInDatabase.product_stock - 1
-                productInDatabase.save()
-                cash.cash_amount = cash.cash_amount + product.product_price
-                amountAdded = amountAdded + product.product_price
-                cash.save()
-            currentOrder.order_done = True
-            currentOrder.save()
-            currentOrder = Order.objects.create(order_user=request.user.username)
-            succesfully_payed = True
-        else:
-            tmpproduct = Product.objects.filter(product_name = operation).first()
-            if tmpproduct is not None:
-                tmplist = helper.parseJsonProductList(currentOrder.order_list)
-                i = tmplist.index(tmpproduct)
-                del tmplist[i]
-                currentOrder.order_list = helper.productListToJson(tmplist)
-                currentOrder.order_totalprice = ( currentOrder.order_totalprice - tmpproduct.product_price ).quantize(decimal.Decimal('0.01'))
-                if currentOrder.order_totalprice < 0:
-                    logging.warn("prices below 0! You might be running in to the 10 digit total order price limit")
-                    currentOrder.order_totalprice = 0
-                currentOrder.save()
+            current_order_parsed_list = helper.parse_json_product_list(current_order.order_list)
+            product_to_add = Product.objects.get(product_id=operation)
+            current_order_parsed_list.append(product_to_add)
+            current_order.order_list = helper.product_list_to_json(current_order_parsed_list)
+            current_order.order_totalprice = ( decimal.Decimal(product_to_add.product_price) + current_order.order_totalprice ).quantize(decimal.Decimal('0.01'))
+            current_order.save()
 
-    totalprice = currentOrder.order_totalprice
-    order_list = helper.parseJsonProductList(currentOrder.order_list)
+        elif operation == "reset":
+            current_order.order_list = "[]"
+            current_order.order_totalprice = 0
+            current_order.save()
+
+        elif operation == "payed":
+            for product in helper.parse_json_product_list(current_order.order_list):
+                product_in_database = Product.objects.get(product_name=product.product_name)
+                if product_in_database.product_stockApplies:
+                    product_in_database.product_stock = productInDatabase.product_stock - 1
+                    product_in_database.save()
+
+                cash.cash_amount = cash.cash_amount + product.product_price
+                amount_added = amount_added + product.product_price
+                cash.save()
+
+            current_order.order_done = True
+            current_order.save()
+            current_order = Order.objects.create(order_user=request.user.username)
+            succesfully_payed = True
+
+        else:
+            product_in_database = Product.objects.filter(product_name = operation).first()
+            if product_in_database is not None:
+                parsed_json_list = helper.parse_json_product_list(current_order.order_list)
+
+                i = parsed_json_list.index(product_in_database)
+                del parsed_json_list[i]
+                current_order.order_list = helper.product_list_to_json(parsed_json_list)
+                current_order.order_totalprice = ( current_order.order_totalprice - product_in_database.product_price ).quantize(decimal.Decimal('0.01'))
+
+                if current_order.order_totalprice < 0:
+                    logging.warn("prices below 0! You might be running in to the 10 digit total order price limit")
+                    current_order.order_totalprice = 0
+                current_order.save()
+
+    totalprice = current_order.order_totalprice
+    order_list = helper.parse_json_product_list(current_order.order_list)
     template = loader.get_template('pos/addition.html')
     context = {
             'order_list': order_list,
@@ -80,6 +86,6 @@ def addition(request, operation):
             'cash': cash,
             'succesfully_payed': succesfully_payed,
             'payment_error': payment_error,
-            'amount_added': amountAdded,
+            'amount_added': amount_added,
     }
     return HttpResponse(template.render(context, request))

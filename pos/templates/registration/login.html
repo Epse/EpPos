@@ -1,81 +1,83 @@
 <!DOCTYPE html>
 <html>
     <head>
-	<meta charset=utf-8 />
-	<title>Order</title>
-	<script type="text/javascript"
-	    src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+	      <meta charset=utf-8 />
+	      <title>Order</title>
 
-	<!--[if IE]>
-	    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
-	    rel="stylesheet"
-	    integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
-	    crossorigin="anonymous">
+	      <script type="text/javascript"
+	              src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
-	    integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-	    crossorigin="anonymous">
-	</script>
-<link rel="apple-touch-icon" sizes="57x57" href="/static/apple-touch-icon-57x57.png">
-<link rel="apple-touch-icon" sizes="60x60" href="/static/apple-touch-icon-60x60.png">
-<link rel="apple-touch-icon" sizes="72x72" href="/static/apple-touch-icon-72x72.png">
-<link rel="apple-touch-icon" sizes="76x76" href="/static/apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" sizes="114x114" href="/static/apple-touch-icon-114x114.png">
-<link rel="apple-touch-icon" sizes="120x120" href="/static/apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" sizes="144x144" href="/static/apple-touch-icon-144x144.png">
-<link rel="apple-touch-icon" sizes="152x152" href="/static/apple-touch-icon-152x152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon-180x180.png">
-<link rel="icon" type="image/png" href="/static/favicon-32x32.png" sizes="32x32">
-<link rel="icon" type="image/png" href="/static/android-chrome-192x192.png" sizes="192x192">
-<link rel="icon" type="image/png" href="/static/favicon-96x96.png" sizes="96x96">
-<link rel="icon" type="image/png" href="/static/favicon-16x16.png" sizes="16x16">
-<link rel="manifest" href="/static/manifest.json">
-<link rel="mask-icon" href="/static/safari-pinned-tab.svg" color="#5bbad5">
-<meta name="msapplication-TileColor" content="#da532c">
-<meta name="msapplication-TileImage" content="/static/mstile-144x144.png">
-<meta name="theme-color" content="#ffffff">
+	      <!--[if IE]>
+	          <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	      <![endif]-->
+	      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	            rel="stylesheet"
+	            integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+	            crossorigin="anonymous">
+
+	      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	              integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	              crossorigin="anonymous">
+	      </script>
+
+        <link rel="apple-touch-icon" sizes="57x57" href="/static/apple-touch-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="/static/apple-touch-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="/static/apple-touch-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/static/apple-touch-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="/static/apple-touch-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="/static/apple-touch-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="/static/apple-touch-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/static/apple-touch-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon-180x180.png">
+        <link rel="icon" type="image/png" href="/static/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="/static/android-chrome-192x192.png" sizes="192x192">
+        <link rel="icon" type="image/png" href="/static/favicon-96x96.png" sizes="96x96">
+        <link rel="icon" type="image/png" href="/static/favicon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="/static/manifest.json">
+        <link rel="mask-icon" href="/static/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="msapplication-TileImage" content="/static/mstile-144x144.png">
+        <meta name="theme-color" content="#ffffff">
     </head>
     <body>
-	<div class="container-fluid">
-	    <div class="row">
-		<div class="col-md-4 col-md-offset-4">
-		    {% if form.errors %}
-		    <div class="alert alert-danger" role="alert">Your username and password didn't match.
-			Please try again.</div>
-		    {% endif %}
+	      <div class="container-fluid">
+	          <div class="row">
+		            <div class="col-md-4 col-md-offset-4">
+		                {% if form.errors %}
+		                <div class="alert alert-danger" role="alert">Your username and password didn't match.
+			                  Please try again.</div>
+		                {% endif %}
 
-		    {% if next %}
-			{% if user.is_authenticated %}
-			    <div class="alert alert-warning" role="alert">
-				Your account doesn't have access to this page. To proceed,
-				please login with an account that has access.
-			    </div>
-			    {% else %}
-				<div class="alert alert-warning" role="alert">Please login to see this page.</div>
-			    {% endif %}
-			{% endif %}
+		                {% if next %}
+			              {% if user.is_authenticated %}
+			              <div class="alert alert-warning" role="alert">
+				                Your account doesn't have access to this page. To proceed,
+				                please login with an account that has access.
+			              </div>
+			              {% else %}
+				            <div class="alert alert-warning" role="alert">Please login to see this page.</div>
+			              {% endif %}
+			              {% endif %}
 
-			<form method="post" action="{% url 'login' %}">
-			    {% csrf_token %}
-			    <div class="row">
-				<div class="col-md-6 col-sm-12">{{ form.username.label_tag }}</div>
-				<div class="col-md-6 col-sm-12">{{ form.username }}</div>
-			    </div>
-			    <div class="row">
-				<div class="col-md-6 col-sm-12">{{ form.password.label_tag }}</div>
-				<div class="col-md-6 col-sm-12">{{ form.password }}</div>
-			    </div>
-			    <div class="row">
-			        <div class="col-sm-12">
-				    <input class="btn btn-primary btn-block" type="submit" value="login" />
-				</div>
-			    </div>
-			    <input type="hidden" name="next" value="{{ next }}" />
-			</form>
-		    </div>
-	    </div>
-	</div>
+			              <form method="post" action="{% url 'login' %}">
+			                  {% csrf_token %}
+			                  <div class="row">
+				                    <div class="col-md-6 col-sm-12">{{ form.username.label_tag }}</div>
+				                    <div class="col-md-6 col-sm-12">{{ form.username }}</div>
+			                  </div>
+			                  <div class="row">
+				                    <div class="col-md-6 col-sm-12">{{ form.password.label_tag }}</div>
+				                    <div class="col-md-6 col-sm-12">{{ form.password }}</div>
+			                  </div>
+			                  <div class="row">
+			                      <div class="col-sm-12">
+				                        <input class="btn btn-primary btn-block" type="submit" value="login" />
+				                    </div>
+			                  </div>
+			                  <input type="hidden" name="next" value="{{ next }}" />
+			              </form>
+		            </div>
+	          </div>
+	      </div>
     </body>
 </html>

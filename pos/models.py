@@ -30,10 +30,10 @@ class Product(models.Model):
             self.full_clean()
         super(Product, self).save(*args, **kwargs)
 
-    def toJson(self):
+    def to_json(self):
         return json.dumps(self.__jsonDict__)
 
-    def fromJson(json):
+    def from_json(json):
         jsonDict = json.loads(json)
         self.product_id = jsonDict['product_id']
         self.product_name = jsonDict['product_name']
