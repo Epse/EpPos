@@ -5,7 +5,7 @@ import json
 import re
 
 def validate_product_name(prodname):
-    regex_string = r'^\w+$'
+    regex_string = r'^[\w ]+$'
     search = re.compile(regex_string).search
     result = bool(search(prodname))
     if not result:

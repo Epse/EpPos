@@ -82,26 +82,26 @@
 	</div>
 	<script>
 	    function addProduct(productID) {
-		$('#additiondiv').load("{% url 'addition' '' %}" + productID);
-		console.log("Ordered number: " + productID);
+		      $('#additiondiv').load("{% url 'addition' '' %}" + productID);
+		      console.log("Ordered number: " + productID);
 	    }
 	    function reset() {
-		$('#additiondiv').load("{% url 'addition' 'reset' %}");
-		console.log("Reset addition");
+		      $('#additiondiv').load("{% url 'addition' 'reset' %}");
+		      console.log("Reset addition");
 	    }
 	    function payed() {
-		$('#additiondiv').load("{% url 'addition' 'payed' %}");
-		console.log("Person payed");
+		      $('#additiondiv').load("{% url 'addition' 'payed' %}");
+		      console.log("Person payed");
 	    }
 	    function removeProduct(product) {
-		console.log(window.location);
-		console.log("{% url 'addition' '' %}");
-		$('#additiondiv').load("{%url 'addition' '' %}" + product);
+		      console.log(product);
+		      console.log("{% url 'addition' '' %}");
+		      $('#additiondiv').load("{%url 'addition' '' %}" + encodeURIComponent(product));
 	    }
 
 	    $(function() {
-		// This shallst load /addition in its div
-		$('#additiondiv').load("{% url 'addition' '' %}");
+		      // This shallst load /addition in its div
+		      $('#additiondiv').load("{% url 'addition' '' %}");
 	    });
 	</script>
     </body>
