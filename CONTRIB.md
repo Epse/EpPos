@@ -24,7 +24,7 @@ Great! Make an issue! A maintainer will tag it with `idea`, which means "up for 
 which means "somebody do this, it HAS to be done".
 
 ## Style
-We (try to) use the (Python PEP 8)[https://www.python.org/dev/peps/pep-0008/] style guide.
+We (try to) use the [Python PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide.
 I am not pedantic on this end but at least try to be somewhat consistent with existing styling.
 
 If you feel like running through existing code and fixing style errors, go for it.
