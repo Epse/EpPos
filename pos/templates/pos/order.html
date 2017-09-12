@@ -56,7 +56,16 @@
 		            </div>
 		            <div id="navbar" class="collapse navbar-collapse">
 		                <ul class="nav navbar-nav">
-			                  <li><a href="javascript:void(0);" onclick="payed();" role="button">Payed</a></li>
+			                  <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" role="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    Payment
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a href="#" onclick="payed('cash');">Cash</a></li>
+                                    <li><a href="#" onclick="payed('card');">Card</a></li>
+                                </ul>
+                        </li>
 			                  <li><a href="javascript:void(0);" onclick="reset();" role="button">Reset</a></li>
 			                  <li><a href="{% url 'logout' %}">Log Out</a></li>
 			                  <li><a href="../../admin">Admin</a></li>
@@ -96,8 +105,12 @@
 		         console.log("Reset addition");
 	       }
 
-	       function payed() {
-		         $('#additiondiv').load("{% url 'addition' 'payed' %}");
+	       function payed(method) {
+             if (method == "cash") {
+		             $('#additiondiv').load("{% url 'addition' 'cashpayment' %}");
+             } else if (method == "card") {
+		             $('#additiondiv').load("{% url 'addition' 'cardpayment' %}");
+             }
 		         console.log("Person payed");
 	       }
 
