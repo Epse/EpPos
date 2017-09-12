@@ -46,7 +46,7 @@ def addition(request, operation):
             current_order.order_totalprice = 0
             current_order.save()
 
-        elif operation == "payed":
+        elif operation == "cashpayment":
             for product in helper.parse_json_product_list(current_order.order_list):
                 product_in_database = Product.objects.get(product_name=product.product_name)
                 if product_in_database.product_stockApplies:
@@ -61,6 +61,21 @@ def addition(request, operation):
             current_order.save()
             current_order = Order.objects.create(order_user=request.user.username)
             succesfully_payed = True
+
+        elif operation == "cardpayment":
+            for product in helper.parse_json_product_list(current_order.order_list):
+                product_in_database = Product.objects.get(product_name=product.product_name)
+                amount_added = amount_added + product.product_price
+                if product_in_database.product_stockApplies:
+                    product_in_database.product_stock = productInDatabase.product_stock - 1
+                    product_in_database.save()
+
+            current_order.order_done = True
+            current_order.save()
+            current_order = Order.objects.create(order_user=request.user.username)
+            succesfully_payed = True
+
+
 
         else:
             product_in_database = Product.objects.filter(product_name = operation).first()
