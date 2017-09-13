@@ -66,13 +66,25 @@
                                     <li><a href="#" onclick="payed('card');">Card</a></li>
                                 </ul>
                         </li>
-			                  <li><a href="javascript:void(0);" onclick="reset();" role="button">Reset</a></li>
-			                  <li><a href="{% url 'logout' %}">Log Out</a></li>
+			                  <li><a href="#" onclick="reset();" role="button">Clear Order</a></li>
+                        {% if request.user.is_staff %}
+                        <li>
+                            <a id="resetcashpopover" tabindex="0" class="" role="button" data-toggle="popover" data-placement="bottom"  title="Reset Cash"
+                               data-content="<input type='number' value='0' name='resetcashamount' id='resetcashinput' step='0.01'><button class='btn btn-default' onclick='resetCash();' style='margin-top: 1em;'>Reset</button>">
+                                Reset Cash
+                            </a>
+                        </li>
 			                  <li><a href="../../admin">Admin</a></li>
+                        {% endif %}
+			                  <li><a href="{% url 'logout' %}">Log Out</a></li>
 		                </ul>
 		            </div>
 	          </div>
 	      </nav>
+        <div id="cashresetdiv" class="alert alert-success alert-dismissable" style="display:none;" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            Successfully reset the cash amount to &euro;<span id="cashresetamount"></span>.
+        </div>
 	      <div class="container-fluid">
 	          <div class="row">
 	              <div id="additiondiv" class="col-sm-6 col-md-4">
@@ -83,7 +95,7 @@
 			                  {% for product in product_list %}
 			                  <div class="col-sm-6 col-md-2" style="padding-top: 5px; padding-bottom: 5px;">
                             <a role="button" class="btn btn-primary btn-block"
-					                     href="javascript:void(0);"
+					                     href="#"
 							                 onclick="addProduct({{ product.product_id }});">
 				                        {{ product.product_name }}<br>&euro;{{ product.product_price }}
                             </a>
@@ -118,9 +130,24 @@
 		         $('#additiondiv').load("{%url 'addition' '' %}" + encodeURIComponent(product));
 	       }
 
+         function resetCash() {
+             var req = new XMLHttpRequest();
+             req.open('GET', "{% url 'cash' '' %}" + encodeURIComponent($("#resetcashinput").val()), false);
+             req.send(null)
+             console.log('trying to reset cash');
+
+             if (req.status == 200) {
+                 $('#cashresetamount').text(encodeURIComponent($("#resetcashinput").val()));
+                 $('#cashresetdiv').show()
+                 $('#resetcashpopover').popover('hide');
+                 console.log('succesfully reset cash');
+             }
+         }
+
 	       $(function() {
 		         // This shallst load /addition in its div
 		         $('#additiondiv').load("{% url 'addition' '' %}");
+             $('#resetcashpopover').popover({html:true});
 	       });
 	      </script>
     </body>
