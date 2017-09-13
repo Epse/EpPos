@@ -104,3 +104,9 @@ def addition(request, operation):
             'amount_added': amount_added,
     }
     return HttpResponse(template.render(context, request))
+
+def cash(request, amount):
+    cash, _ = Cash.objects.get_or_create(id=0)
+    cash.cash_amount = amount
+    cash.save()
+    return HttpResponse('')
