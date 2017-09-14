@@ -7,7 +7,7 @@ You can open the page on mobile client, walk towards your clients, and take thei
 
 # Don't feel confident setting this up yourself?
 No problem, send any of the contributors of this project a message or email and we'll try to help you.
-My email is s@stefpletinck.be and I am sometimes called Stef Pletinck.
+My email is [s@stefpletinck.be](mailto:s@stefpletinck.be) and I am sometimes called Stef Pletinck.
 
 # Want to set it up yourself?
-Have a look over at [our wiki](https://github.com/Epse/EpPos/wiki) and if you have any questions, don't hesitate shooting me an email at s@stefpletinck.be
+Have a look over at [our wiki](https://github.com/Epse/EpPos/wiki) and if you have any questions, don't hesitate shooting me an email at [s@stefpletinck.be](mailto:s@stefpletinck.be)
