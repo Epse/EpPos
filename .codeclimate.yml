@@ -1,3 +1,29 @@
+engines:
+  eslint:
+    enabled: true
+  csslint:
+    enabled: true
+  fixme:
+    enabled: true
+  pep8:
+    enabled: true
+  radon:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - python:
+      - javascript:
+
+ratings:
+  paths:
+    - "pos/helper.py"
+    - "pos/tests.py"
+    - "pos/views.py"
+    - "templates/"
+
+
 excluded_paths:
-- "static/admin/"
-- "pos/migrations/"
+- "**/static/**/*"
+- "pos/migrations/**"
