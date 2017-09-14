@@ -1,3 +1,4 @@
+![release-version-badge](https://img.shields.io/github/release/Epse/EpPos.svg)
 # EpPos
 EpPos (name subject to change, suggestions welcome) is a basic Django (python)-based Point Of Sale
 system that is designed to be platform-independant (it runs on the web) and completely mobile- and
