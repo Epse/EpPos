@@ -58,10 +58,10 @@ docs/_build/
 # PyBuilder
 target/
 
-#Ipython Notebook
+# Ipython Notebook
 .ipynb_checkpoints
 
-#File with my production passwords. U no Git!
+# File with my production passwords. Should obviously never be synced
 passwds.txt
 # and neither locally changed settings
 EpPos2/settings_local.py
