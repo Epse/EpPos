@@ -18,11 +18,12 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import forms as auth_forms
 from django.views.generic.base import RedirectView
+from pos.views import login
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/pos', permanent=True)),
     url(r'^pos/', include('pos.urls')),
     url(r'^admin/', admin.site.urls, name='admin'),
     url(r'^accounts/logout/$', auth_views.logout, { 'next_page': '/pos/order'} , name='logout'),
-    url(r'^accounts/login/$', auth_views.login, { 'template_name': 'registration/login.html'}, name='login'),
+    url(r'^accounts/login/$', login , name='login'),
 ]

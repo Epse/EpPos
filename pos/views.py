@@ -4,13 +4,48 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from django.core.exceptions import MultipleObjectsReturned
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 from .models import Product, Order, Cash
 from . import helper
 
-# Create your views here.
 def index(request):
     return HttpResponse("Hello World. This is the pos starting page")
+
+def login(request):
+    if request.method == "GET":
+        if 'next' in request.GET:
+            next = request.GET['next']
+        else:
+            next = 'pos/'
+
+        template = loader.get_template('registration/login.html')
+        context = {
+            'error': False,
+            'next': next
+        }
+        return HttpResponse(template.render(context, request))
+
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+
+    if user is not None:
+        auth_login(request, user)
+        if 'next' in request.GET:
+            next = request.GET['next']
+        else:
+            next = '/pos/'
+        return redirect(next)
+    else:
+        template = loader.get_template('registration/login.html')
+        context = {
+            'error': True
+        }
+        return HttpResponse(template.render(context, request))
+
 
 @login_required
 def order(request):
