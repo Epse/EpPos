@@ -47,14 +47,16 @@ def addition(request, operation):
             current_order.save()
 
         elif operation == "cashpayment":
-            for product in helper.parse_json_product_list(current_order.order_list):
-                product_in_database = Product.objects.get(product_name=product.product_name)
-                if product_in_database.product_stockApplies:
-                    product_in_database.product_stock = productInDatabase.product_stock - 1
-                    product_in_database.save()
+            # when a customer just paid in cash
+            for ordered_product in helper.parse_json_product_list(current_order.order_list):
+                product = Product.objects.get(
+                    product_name=ordered_product.product_name)
+                if product.product_stockApplies:
+                    product.product_stock -= 1
+                    product.save()
 
-                cash.cash_amount = cash.cash_amount + product.product_price
-                amount_added = amount_added + product.product_price
+                cash.cash_amount += ordered_product.product_price
+                amount_added += ordered_product.product_price
                 cash.save()
 
             current_order.order_done = True
