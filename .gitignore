@@ -63,6 +63,8 @@ target/
 
 #File with my production passwords. U no Git!
 passwds.txt
+# and neither locally changed settings
+EpPos2/settings_local.py
 
 # Random python file
 db.sqlite3
