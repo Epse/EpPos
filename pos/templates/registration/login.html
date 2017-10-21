@@ -2,7 +2,7 @@
 <html>
     <head>
 	      <meta charset=utf-8 />
-	      <title>Order</title>
+	      <title>Log in</title>
 
 	      <script type="text/javascript"
 	              src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
@@ -43,7 +43,7 @@
 	      <div class="container-fluid">
 	          <div class="row">
 		            <div class="col-md-4 col-md-offset-4">
-		                {% if form.errors %}
+		                {% if error %}
 		                <div class="alert alert-danger" role="alert">Your username and password didn't match.
 			                  Please try again.</div>
 		                {% endif %}
@@ -55,29 +55,30 @@
 				                please login with an account that has access.
 			              </div>
 			              {% else %}
-				            <div class="alert alert-warning" role="alert">Please login to see this page.</div>
+				                <div class="alert alert-warning" role="alert">Please login to see this page.</div>
 			              {% endif %}
 			              {% endif %}
-
-			              <form method="post" action="{% url 'login' %}">
-			                  {% csrf_token %}
-			                  <div class="row">
-				                    <div class="col-md-6 col-sm-12">{{ form.username.label_tag }}</div>
-				                    <div class="col-md-6 col-sm-12">{{ form.username }}</div>
-			                  </div>
-			                  <div class="row">
-				                    <div class="col-md-6 col-sm-12">{{ form.password.label_tag }}</div>
-				                    <div class="col-md-6 col-sm-12">{{ form.password }}</div>
-			                  </div>
-			                  <div class="row">
-			                      <div class="col-sm-12">
-				                        <input class="btn btn-primary btn-block" type="submit" value="login" />
-				                    </div>
-			                  </div>
-			                  <input type="hidden" name="next" value="{{ next }}" />
-			              </form>
-		            </div>
-	          </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-md-offset-4">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input class="form-control" id="username" name="username" type="text" placeholder="Username" />
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input class="form-control" id="password" name="password" type="password" placeholder="Password" />
+                        </div>
+                        <input type="hidden" name="next" value="{{ next }}" />
+                        <div class="form-group">
+                            <input class="form-control btn btn-primary" name="submit" type="submit" value="Log in" />
+                        </div>
+                    </form>
+                </div>
+            </div>
 	      </div>
     </body>
 </html>
