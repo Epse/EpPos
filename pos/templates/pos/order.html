@@ -90,8 +90,8 @@
 			                  <div class="col-sm-6 col-md-3" style="padding-top: 5px; padding-bottom: 5px;">
                             <a role="button" class="btn btn-primary btn-block"
 					                     href="#"
-							                 onclick="addProduct({{ product.product_id }});">
-				                        {{ product.product_name }}<br>&euro;{{ product.product_price }}
+							                 onclick="addProduct({{ product.id }});">
+				                        {{ product.name }}<br>&euro;{{ product.price }}
                             </a>
                         </div>
 			                  {% endfor %}
@@ -124,8 +124,8 @@
 		         console.log("Person payed");
 	       }
 
-	       function removeProduct(product) {
-		         $('#additiondiv').load("{%url 'addition' '' %}" + encodeURIComponent(product));
+	       function removeProduct(pio_id) {
+		         $('#additiondiv').load("{%url 'rem_from_order' %}?pio_id=" + encodeURIComponent(pio_id));
 	       }
 
          function resetCash() {
