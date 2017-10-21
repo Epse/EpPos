@@ -128,4 +128,4 @@ try:
     # Override values in the default file with your values:
     import settings_local
 except ImportError as e:
-    pass  #doing nothing is OK.
+    pass  # Doing nothing is OK.
