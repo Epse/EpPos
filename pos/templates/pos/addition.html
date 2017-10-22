@@ -20,13 +20,13 @@
         </thead>
         <tbody>
             {% if order_list %}
-            {% for product in order_list %}
+            {% for productInOrder in order_list %}
             <tr>
-                <td>{{ product.product_name }}</td>
-                <td>&euro;{{ product.product_price }}</td>
+                <td>{{ productInOrder.product }}</td>
+                <td>&euro;{{ productInOrder.product.price }}</td>
                 <td>
                     <a role="button" class="btn btn-danger"
-		                 href="javascript:void(0);" onclick='removeProduct("{{ product.product_name }}");'>X</a>
+		                 href="javascript:void(0);" onclick='removeProduct("{{ productInOrder.id }}");'>X</a>
                 </td>
             </tr>
             {% endfor %}

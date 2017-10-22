@@ -1,15 +1,17 @@
 import logging
 import decimal
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.template import loader
 from django.core.exceptions import MultipleObjectsReturned
+from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-from .models import Product, Order, Cash
+from .models import Product, Order, ProductInOrder, Cash
 from . import helper
+
 
 def index(request):
     return HttpResponse("Hello World. This is the pos starting page")
@@ -53,90 +55,94 @@ def order(request):
     }
     return render(request, 'pos/order.html', context=context)
 
+
+@login_required
 def addition(request, operation):
     cash, _ = Cash.objects.get_or_create(id=0)
     succesfully_payed = False
     payment_error = False
     amount_added = 0
-    q = Order.objects.filter(order_user=request.user.username, order_done=False).order_by('order_lastChange')
+    q = Order.objects.filter(user=request.user, done=False)
+    
     if q.count() >= 1:
-        current_order = q[0]
+        order = q[0]
     else:
-        current_order = Order.objects.create(order_user=request.user.username)
+        order = Order.objects.create(user=request.user)
 
     if operation:
         if operation.isdecimal():
-            current_order_parsed_list = helper.parse_json_product_list(current_order.order_list)
-            product_to_add = Product.objects.get(product_id=operation)
-            current_order_parsed_list.append(product_to_add)
-            current_order.order_list = helper.product_list_to_json(current_order_parsed_list)
-            current_order.order_totalprice = ( decimal.Decimal(product_to_add.product_price) + current_order.order_totalprice ).quantize(decimal.Decimal('0.01'))
-            current_order.save()
+            product = Product.objects.get(id=operation)
+            pio = ProductInOrder(order=order, product=product)
+            pio.save()
+            order.total += product.price
+            order.save()
 
         elif operation == "reset":
-            current_order.order_list = "[]"
-            current_order.order_totalprice = 0
-            current_order.save()
+            order.products.clear()
+            order.total = 0
+            order.save()
 
-        elif operation == "cashpayment":
+        elif operation == "cashpayment" or operation == "cardpayment":
             # when a customer just paid in cash
-            for ordered_product in helper.parse_json_product_list(current_order.order_list):
-                product = Product.objects.get(
-                    product_name=ordered_product.product_name)
-                if product.product_stockApplies:
-                    product.product_stock -= 1
+            for product in order.products.all():
+                if product.stockApplies:
+                    product.stock -= 1
                     product.save()
+                if operation == "cashpayment":
+                    cash.cash_amount += product.price
+                    amount_added += product.price
+                    cash.save()
 
-                cash.cash_amount += ordered_product.product_price
-                amount_added += ordered_product.product_price
-                cash.save()
-
-            current_order.order_done = True
-            current_order.save()
-            current_order = Order.objects.create(order_user=request.user.username)
+            order.done = True
+            order.save()
+            order = Order.objects.create(user=request.user)
             succesfully_payed = True
 
-        elif operation == "cardpayment":
-            for product in helper.parse_json_product_list(current_order.order_list):
-                product_in_database = Product.objects.get(product_name=product.product_name)
-                amount_added = amount_added + product.product_price
-                if product_in_database.product_stockApplies:
-                    product_in_database.product_stock = productInDatabase.product_stock - 1
-                    product_in_database.save()
-
-            current_order.order_done = True
-            current_order.save()
-            current_order = Order.objects.create(order_user=request.user.username)
-            succesfully_payed = True
-
-
-
-        else:
-            product_in_database = Product.objects.filter(product_name = operation).first()
-            if product_in_database is not None:
-                parsed_json_list = helper.parse_json_product_list(current_order.order_list)
-
-                i = parsed_json_list.index(product_in_database)
-                del parsed_json_list[i]
-                current_order.order_list = helper.product_list_to_json(parsed_json_list)
-                current_order.order_totalprice = ( current_order.order_totalprice - product_in_database.product_price ).quantize(decimal.Decimal('0.01'))
-
-                if current_order.order_totalprice < 0:
-                    logging.warn("prices below 0! You might be running in to the 10 digit total order price limit")
-                    current_order.order_totalprice = 0
-                current_order.save()
-
-    totalprice = current_order.order_totalprice
-    order_list = helper.parse_json_product_list(current_order.order_list)
     context = {
-            'order_list': order_list,
-            'totalprice': totalprice,
+            'order_list': order.productinorder_set.all(),
+            'totalprice': order.total,
             'cash': cash,
             'succesfully_payed': succesfully_payed,
             'payment_error': payment_error,
             'amount_added': amount_added,
     }
     return render(request, 'pos/addition.html', context=context)
+
+
+@login_required
+def remove_from_order(request, order_id=None, pio_id=None):
+    """Remove a specific item from the order"""
+
+    # attempt ?pio_id= paramter if it was not in the url
+    if pio_id is None: pio_id = request.GET.get('pio_id', None)
+
+    pio = get_object_or_404(ProductInOrder, id=pio_id)
+    #sanity check order id if it matches, sth was weird with the url otherwise
+    if order_id is not None and (int(order_id) != pio.order.id):
+        #product was not found!
+        messages.add_message(request, messages.WARNING,
+                    'Failed to find product \'\', nothing removed from the '
+                    'order.')
+        return HttpResponseBadRequest("Order id and Produkt id combination is impossible. This URL is misconstructed.")
+
+    order = pio.order
+    product = pio.product
+    order.total -= product.price
+    order.save()        
+
+    if order.total < 0:
+        logging.warn("prices below 0! You might be running in to the 10 digit total order price limit")
+        order.total = 0
+        order.save()
+    
+    pio.delete()
+    context = {
+            'order_list': order.productinorder_set.all(),
+            'totalprice': order.total,
+            'cash': cash,
+    }
+    return render(request, 'pos/addition.html', context=context)
+
 
 def cash(request, amount):
     cash, _ = Cash.objects.get_or_create(id=0)

@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.conf import settings
 import logging
 import json
 import re
@@ -13,17 +14,23 @@ def validate_product_name(prodname):
 
 # Create your models here.
 class Product(models.Model):
-    product_id = models.AutoField(primary_key=True)
-    product_name = models.CharField(max_length=100, validators=[validate_product_name])
-    product_price = models.DecimalField(max_digits=7,decimal_places=2)
-    product_stockApplies = models.BooleanField()
-    product_stock = models.PositiveSmallIntegerField(default=0)
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100, validators=[validate_product_name],
+                            help_text="Title for the product")
+    price = models.DecimalField(max_digits=7,decimal_places=2,
+                                help_text="Gross price per item")
+    stockApplies = models.BooleanField(default=False,
+                                       help_text="Does selling an item reduce "
+                                       "the number on stock?")
+    stock = models.PositiveSmallIntegerField(default=0,
+                                             help_text="The number of items on"
+                                             " stock")
 
     def __str__(self):
-        return self.product_name
+        return self.name
 
     def clean(self):
-        validate_product_name(self.product_name)
+        validate_product_name(self.name)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -35,18 +42,60 @@ class Product(models.Model):
 
     def from_json(json):
         jsonDict = json.loads(json)
-        self.product_id = jsonDict['product_id']
-        self.product_name = jsonDict['product_name']
-        self.product_price = jsonDict['product_price']
-        self.product_stockApplies = jsonDict['product_stockApplies']
-        self.product_stock = jsonDict['product_stock']
+        self.id = jsonDict['id']
+        self.name = jsonDict['name']
+        self.price = jsonDict['price']
+        self.stockApplies = jsonDict['stockApplies']
+        self.stock = jsonDict['stock']
+
+    class Meta:
+        ordering = ['name']
+        default_related_name = 'products'
+
 
 class Order(models.Model):
-    order_user = models.CharField(max_length=50)
-    order_list = models.CharField(max_length=10000, default="[]")
-    order_totalprice = models.DecimalField(max_digits=10,decimal_places=2,default=0)
-    order_done = models.BooleanField(default=False)
-    order_lastChange = models.DateField(auto_now=True)
+    """Representing a single order for which a seller is responsible"""
+    # user is the waiter/seller of this order
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE,
+                             help_text="The seller/waiter handling this "
+                             "order.")
+    # contains a list of products in this order
+    products = models.ManyToManyField(Product, through='ProductInOrder',
+                                      help_text="A list of products "
+                                      "comprising the order.")
+    # contains the total order amonut
+    total = models.DecimalField(max_digits=10,decimal_places=2,default=0,
+                                editable=False,
+                                help_text="Total amount of the order.")
+    # True if the order was handled and paid
+    done = models.BooleanField(default=False,
+                               help_text="Has the order been handled and "
+                               "paid?")
+    # updated when the order changes
+    lastChange = models.DateTimeField(auto_now=True,
+                                      help_text="Last modification time.")
+    # when the order started (to allow creating stats, group by day,...)
+    # For backward compatibility we need to allow None as startDate for
+    # orders before this field was introduced
+    startTime = models.DateTimeField(auto_now_add=True, editable=False,
+                                     null=True, blank=True,
+                                     help_text="Order was created at this "
+                                     "time.")
 
+    def __str__(self):              # __unicode__ on Python 2
+        return "Order #{} ({})".format(self.id, self.user)
+
+    class Meta:
+        ordering = ['-lastChange']
+        get_latest_by = "lastChange"
+
+
+class ProductInOrder(models.Model):
+    """Intermediary model connecting products and orders"""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+
+                    
 class Cash(models.Model):
     cash_amount = models.DecimalField(max_digits=7, decimal_places=2,default=0)
