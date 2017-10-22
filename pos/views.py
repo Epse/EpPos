@@ -21,12 +21,11 @@ def login(request):
         else:
             next = 'pos/'
 
-        template = loader.get_template('registration/login.html')
         context = {
             'error': False,
             'next': next
         }
-        return HttpResponse(template.render(context, request))
+        return render(request, 'registration/login.html', context=context)
 
     username = request.POST['username']
     password = request.POST['password']
@@ -40,21 +39,19 @@ def login(request):
             next = '/pos/'
         return redirect(next)
     else:
-        template = loader.get_template('registration/login.html')
         context = {
             'error': True
         }
-        return HttpResponse(template.render(context, request))
+        return render(request, 'registration/login.html', context=context)
 
 
 @login_required
 def order(request):
     product_list = Product.objects.all
-    template = loader.get_template('pos/order.html')
     context = {
             'product_list': product_list,
     }
-    return HttpResponse(template.render(context, request))
+    return render(request, 'pos/order.html', context=context)
 
 def addition(request, operation):
     cash, _ = Cash.objects.get_or_create(id=0)
@@ -131,7 +128,6 @@ def addition(request, operation):
 
     totalprice = current_order.order_totalprice
     order_list = helper.parse_json_product_list(current_order.order_list)
-    template = loader.get_template('pos/addition.html')
     context = {
             'order_list': order_list,
             'totalprice': totalprice,
@@ -140,7 +136,7 @@ def addition(request, operation):
             'payment_error': payment_error,
             'amount_added': amount_added,
     }
-    return HttpResponse(template.render(context, request))
+    return render(request, 'pos/addition.html', context=context)
 
 def cash(request, amount):
     cash, _ = Cash.objects.get_or_create(id=0)
