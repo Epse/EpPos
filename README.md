@@ -16,7 +16,7 @@ current cash stash and removes that amount of each product from stock (if applic
 It is verry simple. Have a look at the wiki! Or read this block of text since the wiki isn't yet up-to-date.
 
 First off, install python 3 and Django. If you are using Linux, they are probably in your repos.
-Then [download EpPOs](https://github.com/Epse/EpPos/releases) to wherever you want to keep your Django apps, edit settings.py
+Then [download EpPos](https://github.com/Epse/EpPos/releases) to wherever you want to keep your Django apps, edit settings.py
 and change the `DEBUG` var to `False` and add the domain name or IP-address from which the POS will
 be accessed to the `ALLOWED_HOSTS` variable. Then run `python manage.py migrate` and `python
 manage.py createsuperuser` to create a new admin account which you can use to manage the system and
