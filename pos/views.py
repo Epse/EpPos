@@ -11,9 +11,6 @@ from django.shortcuts import redirect
 from .models import Product, Order, Cash
 from . import helper
 
-def index(request):
-    return HttpResponse("Hello World. This is the pos starting page")
-
 def login(request):
     if request.method == "GET":
         if 'next' in request.GET:
