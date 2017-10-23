@@ -119,7 +119,7 @@ def addition(request, operation):
                 current_order.order_totalprice = ( current_order.order_totalprice - product_in_database.product_price ).quantize(decimal.Decimal('0.01'))
 
                 if current_order.order_totalprice < 0:
-                    logging.warn("prices below 0! You might be running in to the 10 digit total order price limit")
+                    logging.error("prices below 0! You might be running in to the 10 digit total order price limit")
                     current_order.order_totalprice = 0
                 current_order.save()
 
