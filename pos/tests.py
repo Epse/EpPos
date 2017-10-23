@@ -21,7 +21,7 @@ class HelperTestCase(SimpleTestCase):
         self.assertEqual(test_list[2].product_price, Decimal(self.product_list[2].product_price))
         self.assertEqual(test_list[3].product_price, Decimal(self.product_list[3].product_price))
 
-class CashTestCase(TransactionTestCase):
+class CashViewTestCase(TransactionTestCase):
     def test_cash_set(self):
         client = Client()
         response = client.get(reverse('cash', args=[5]))
