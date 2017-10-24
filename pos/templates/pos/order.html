@@ -118,9 +118,9 @@
 
 	       function payed(method) {
              if (method == "cash") {
-		             $('#additiondiv').load("{% url 'addition' 'cashpayment' %}");
+		             $('#additiondiv').load("{% url 'payment_cash' %}");
              } else if (method == "card") {
-		             $('#additiondiv').load("{% url 'addition' 'cardpayment' %}");
+		             $('#additiondiv').load("{% url 'payment_card' %}");
              }
 		         console.log("Person payed");
 	       }

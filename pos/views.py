@@ -76,39 +76,6 @@ def addition(request, operation):
             current_order.order_totalprice = 0
             current_order.save()
 
-        elif operation == "cashpayment":
-            # when a customer just paid in cash
-            for ordered_product in helper.parse_json_product_list(current_order.order_list):
-                product = Product.objects.get(
-                    product_name=ordered_product.product_name)
-                if product.product_stockApplies:
-                    product.product_stock -= 1
-                    product.save()
-
-                cash.cash_amount += ordered_product.product_price
-                amount_added += ordered_product.product_price
-                cash.save()
-
-            current_order.order_done = True
-            current_order.save()
-            current_order = Order.objects.create(order_user=request.user.username)
-            succesfully_payed = True
-
-        elif operation == "cardpayment":
-            for product in helper.parse_json_product_list(current_order.order_list):
-                product_in_database = Product.objects.get(product_name=product.product_name)
-                amount_added = amount_added + product.product_price
-                if product_in_database.product_stockApplies:
-                    product_in_database.product_stock = productInDatabase.product_stock - 1
-                    product_in_database.save()
-
-            current_order.order_done = True
-            current_order.save()
-            current_order = Order.objects.create(order_user=request.user.username)
-            succesfully_payed = True
-
-
-
         else:
             product_in_database = Product.objects.filter(product_name = operation).first()
             if product_in_database is not None:
@@ -133,6 +100,83 @@ def addition(request, operation):
             'succesfully_payed': succesfully_payed,
             'payment_error': payment_error,
             'amount_added': amount_added,
+    }
+    return render(request, 'pos/addition.html', context=context)
+
+@login_required
+def payment_cash(request):
+    cash, _ = Cash.objects.get_or_create(id=0)
+    succesfully_payed = False
+    payment_error = False
+    amount_added = 0
+    q = Order.objects.filter(order_user=request.user.username, order_done=False).order_by('order_lastChange')
+    if q.count() >= 1:
+        current_order = q[0]
+    else:
+        current_order = Order.objects.create(order_user=request.user.username)
+
+    for ordered_product in helper.parse_json_product_list(current_order.order_list):
+        product = Product.objects.get(
+            product_name=ordered_product.product_name)
+        if product.product_stockApplies:
+            product.product_stock -= 1
+            product.save()
+
+        cash.cash_amount += ordered_product.product_price
+        amount_added += ordered_product.product_price
+        cash.save()
+
+    current_order.order_done = True
+    current_order.save()
+    current_order = Order.objects.create(order_user=request.user.username)
+    succesfully_payed = True
+
+    totalprice = current_order.order_totalprice
+    order_list = helper.parse_json_product_list(current_order.order_list)
+    context = {
+            'order_list': order_list,
+            'totalprice': totalprice,
+            'cash': cash,
+            'succesfully_payed': succesfully_payed,
+            'payment_error': payment_error,
+            'amount_added': amount_added,
+    }
+    return render(request, 'pos/addition.html', context=context)
+
+
+@login_required
+def payment_card(request):
+    cash, _ = Cash.objects.get_or_create(id=0)
+    succesfully_payed = False
+    payment_error = False
+    amount_added = 0
+
+    q = Order.objects.filter(order_user=request.user.username, order_done=False).order_by('order_lastChange')
+    if q.count() >= 1:
+        current_order = q[0]
+    else:
+        current_order = Order.objects.create(order_user=request.user.username)
+
+    for product in helper.parse_json_product_list(current_order.order_list):
+        product_in_database = Product.objects.get(product_name=product.product_name)
+        if product_in_database.product_stockApplies:
+            product_in_database.product_stock -= 1
+            product_in_database.save()
+
+        current_order.order_done = True
+        current_order.save()
+        current_order = Order.objects.create(order_user=request.user.username)
+        succesfully_payed = True
+
+    totalprice = current_order.order_totalprice
+    order_list = helper.parse_json_product_list(current_order.order_list)
+    context = {
+            'order_list': order_list,
+            'totalprice': totalprice,
+            'cash': cash,
+            'succesfully_payed': succesfully_payed,
+            'payment_error': payment_error,
+            'amount_added': 0,
     }
     return render(request, 'pos/addition.html', context=context)
 
