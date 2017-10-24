@@ -1,7 +1,7 @@
 ![release-version-badge](https://img.shields.io/github/tag/Epse/EpPos.svg) ![codeclimate-badge](https://img.shields.io/codeclimate/github/Epse/EpPos.svg)
 # EpPos
 EpPos is a basic Django (python)-based Point Of Sale
-system that is designed to be platform-independant (it runs on the web) and completely mobile- and
+system that is designed to be platform-independent (it runs on the web) and completely mobile- and
 touch-friendly. 
 
 **Contributors: see the CONTRIB.md file!**
@@ -9,13 +9,13 @@ touch-friendly.
 ## Hold on Epse, what on earth is that POS shenanigans about?
 Well, glad you asked. A POS system is a program that is used by salespeople or, more in the scope of
 this particular one, waiters at a pub or restaurant. They simple click on what you ordered, it is
-added to your addition and tracks the payments. Once you have payed, it adds you money to the
-current cash stash and removes that amount of each product from stock (if applicable)
+added to your addition and tracks the payments. Once you have payed, it adds the money to the
+current cash stash and removes that amount of each product from stock (if applicable).
 
 ## Well gee, that sounds awesome! How do I run it?
-It is verry simple. Have a look at the wiki! Or read this block of text since the wiki isn't yet up-to-date.
+It is very simple. Have a look at the wiki! Or read this block of text since the wiki isn't yet up-to-date.
 
-First off, install python 3 and Django. If you are using Linux, they are probably in your repos.
+First off, install Python 3 and Django. If you are using Linux, they are probably in your repo's.
 Then [download EpPos](https://github.com/Epse/EpPos/releases) to wherever you want to keep your Django apps, edit settings.py
 and change the `DEBUG` var to `False` and add the domain name or IP-address from which the POS will
 be accessed to the `ALLOWED_HOSTS` variable. Then run `python manage.py migrate` and `python
@@ -25,7 +25,7 @@ Then set it up like you would set up any normal Django application, we recommend
 [uWSGI](http://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html) with nginx.
 
 ## Known "issues"
-- There is a limitation in the total value of an order. It cannot exceed 10 digits, counting decimal places.
+- There is a limitation in the total value of an order. It cannot exceed 10 digits, counting decimal places. If someone runs into this: congratulations, I'll have to update this.
 
 ## Beauty. Or no! A beast! What now?
 You found a bug! Congratulations! You can report this issue on or issue tracker on GitHub. I will be
