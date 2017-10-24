@@ -5,9 +5,11 @@ gratitude here before we get going. Thank You!
 
 ## Git
 This repo uses git, hence it is on GitHub. Generally, `master` is the *next-release* branch, which people
-shouldn't clone to run in production, but you still shouldn't hack directly on it. If you want to add a new feature, make a new branch. There is a
-naming scheme for branches:
+~~shouldn't~~ **SHOULD NEVER EVER EVER EVER** clone to run in production, but you still shouldn't hack directly on it.
+If you want to add a new feature, make a new branch. 
+There is a naming scheme for branches:
 `issueID.somename`
+
 If there is no issue in the tracker for what you are doing you should create one and mention in a
 comment you are working on a pull request. A maintainer will then set the appropriate tags.
 If your branch is ready for production, submit a pull request. A maintainer will review your pull
@@ -21,11 +23,10 @@ will add the appropriate tags. New features should also be in the issue tracker,
 
 ## I have an idea!
 Great! Make an issue! A maintainer will tag it with `idea`, which means "up for debate" or `task`,
-which means "somebody do this, it HAS to be done".
+which means "somebody do this, please".
 
 ## Style
-We (try to) use the [Python PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide.
-I am not pedantic on this end but at least try to be somewhat consistent with existing styling.
-
-If you feel like running through existing code and fixing style errors, go for it.
-
+We use the [Python PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide.
+There is a very practical CodeClimate check that is ran every time you push to a Pull Request.
+It will show a nice green checkmark when you're doing good. If it's red, I'll complain.
+Our code checker is not all that pedantic, so this should be doable. Thank you!
