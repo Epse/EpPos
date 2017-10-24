@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.test import SimpleTestCase, Client, TransactionTestCase
+from django.test import SimpleTestCase, Client, TestCase
 from django.core.urlresolvers import reverse
 from decimal import *
 from .helper import parse_json_product_list, product_list_to_json
-from .models import Product, Cash, validate_product_name
+from .models import Product, Cash, validate_product_name, Order
 
 class HelperTestCase(SimpleTestCase):
     product_list = []
@@ -24,10 +24,9 @@ class HelperTestCase(SimpleTestCase):
             self.assertEqual(test_list[i].product_price, Decimal(self.product_list[i].product_price))
             self.assertEqual(test_list[i].product_name, self.product_list[i].product_name)
 
-class CashViewTestCase(TransactionTestCase):
+class CashViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('test', 'test@example.com', 'pswd')
-        self.client = Client()
 
     def test_cash_set(self):
         self.client.login(username='test', password='pswd')
@@ -54,10 +53,9 @@ class CashViewTestCase(TransactionTestCase):
         response = self.client.get(reverse('cash', args=[0]))
         self.assertEqual(response.status_code, 403)
 
-class OrderViewTestCase(TransactionTestCase):
+class OrderViewTestCase(TestCase):
     product_list = []
     def setUp(self):
-        self.client = Client()
         self.product_list.append(Product.objects.create(product_stockApplies = False, product_name="one", product_price=Decimal(12)))
         self.product_list.append(Product.objects.create(product_stockApplies = False, product_name="two", product_price=Decimal(4)))
         self.product_list.append(Product.objects.create(product_stockApplies = False, product_name="three", product_price=Decimal(0)))
@@ -97,10 +95,76 @@ class ProductNameTestCase(SimpleTestCase):
 
     def test_correct_names(self):
         for name in self.test_names_correct:
-            # This might seem dodgy, but if it raises an error,
+            # Self might seem dodgy, but if it raises an error,
             # that will count as a failed test.
             validate_product_name(name)
 
     def test_incorrect_names(self):
         for name in self.test_names_incorrect:
             self.assertRaises(ValidationError, validate_product_name, name)
+
+
+class OrderTestCase(TestCase):
+    product_list = []
+    initial_amount = 15
+    def setUp(self):
+        self.user = User.objects.create_user('test', 'test@example.com', 'pswd')
+        self.product_list.append(Product.objects.create(product_stockApplies = False, product_name="one", product_price=Decimal(12)))
+        self.product_list.append(Product.objects.create(product_stockApplies = False, product_name="two", product_price=Decimal(4)))
+        self.product_list.append(Product.objects.create(product_stockApplies = False, product_name="three", product_price=Decimal(0)))
+        self.product_list.append(Product.objects.create(product_stockApplies = False, product_name="four", product_price=Decimal(5000)))
+
+        # Set some initial cash amount
+        cash, _ = Cash.objects.get_or_create(id=0)
+        cash.cash_amount = self.initial_amount
+        cash.save()
+
+    def test_card_payment(self):
+        self.client.login(username='test', password='pswd')
+
+        # Add things to basket and while we're at it, calculate the total price
+        order_price = 0
+        for product in self.product_list:
+            response = self.client.get(reverse('addition', args=[product.product_id]))
+            self.assertEqual(response.status_code, 200)
+            order_price += product.product_price
+
+        order = Order.objects.filter(order_user=self.user.username, order_done=False).order_by('order_lastChange')[0]
+        self.assertEqual(order.order_totalprice, order_price)
+
+        # Now pay by card
+        response = self.client.get(reverse('payment_card'))
+        self.assertEqual(response.status_code, 200)
+
+        # Check if order is reset
+        order = Order.objects.filter(order_user=self.user.username, order_done=False).order_by('order_lastChange')[0]
+        self.assertEqual(order.order_totalprice, 0)
+
+        # Just to be sure, amount is not added to cash
+        cash, _ = Cash.objects.get_or_create(id=0)
+        self.assertEqual(cash.cash_amount, self.initial_amount)
+
+    def test_cash_payment(self):
+        self.client.login(username='test', password='pswd')
+
+        # Add things to basket and while we're at it, calculate the total price
+        order_price = 0
+        for product in self.product_list:
+            response = self.client.get(reverse('addition', args=[product.product_id]))
+            self.assertEqual(response.status_code, 200)
+            order_price += product.product_price
+
+        order = Order.objects.filter(order_user=self.user.username, order_done=False).order_by('order_lastChange')[0]
+        self.assertEqual(order.order_totalprice, order_price)
+
+        # Now pay by cash
+        response = self.client.get(reverse('payment_cash'))
+        self.assertEqual(response.status_code, 200)
+
+        # Check if order is reset
+        order = Order.objects.filter(order_user=self.user.username, order_done=False).order_by('order_lastChange')[0]
+        self.assertEqual(order.order_totalprice, 0)
+
+        # Check if amount added to cash
+        cash, _ = Cash.objects.get_or_create(id=0)
+        self.assertEqual(cash.cash_amount, order_price + self.initial_amount)
