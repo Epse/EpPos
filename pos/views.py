@@ -1,7 +1,7 @@
 import logging
 import decimal
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.template import loader
 from django.core.exceptions import MultipleObjectsReturned
 from django.contrib.auth import authenticate
@@ -50,6 +50,7 @@ def order(request):
     }
     return render(request, 'pos/order.html', context=context)
 
+@login_required
 def addition(request, operation):
     cash, _ = Cash.objects.get_or_create(id=0)
     succesfully_payed = False
@@ -135,8 +136,13 @@ def addition(request, operation):
     }
     return render(request, 'pos/addition.html', context=context)
 
+# We can't use the `@login_required` decorator here because this
+# page is never shown to the user and only used in AJAX requests
 def cash(request, amount):
-    cash, _ = Cash.objects.get_or_create(id=0)
-    cash.cash_amount = amount
-    cash.save()
-    return HttpResponse('')
+    if (request.user.is_authenticated):
+        cash, _ = Cash.objects.get_or_create(id=0)
+        cash.cash_amount = amount
+        cash.save()
+        return HttpResponse('')
+    else:
+        return HttpResponseForbidden('403 Forbidden')

@@ -5,11 +5,11 @@ import json
 import re
 
 def validate_product_name(prodname):
-    regex_string = r'^[\w ]+$'
+    regex_string = r'^\w[\w ]*$'
     search = re.compile(regex_string).search
     result = bool(search(prodname))
     if not result:
-        raise ValidationError("Please only use letters, numbers and underscores.")
+        raise ValidationError("Please only use letters, numbers and underscores or spaces. The name cannot start with a space.")
 
 # Create your models here.
 class Product(models.Model):
