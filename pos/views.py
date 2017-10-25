@@ -82,8 +82,8 @@ def order_add_product(request, product_id):
     current_order.order_totalprice = (
         decimal.Decimal(
             product_to_add.product_price) +
-            current_order.order_totalprice) \
-            .quantize(decimal.Decimal('0.01'))
+        current_order.order_totalprice) \
+        .quantize(decimal.Decimal('0.01'))
     current_order.save()
 
     return addition(request)
