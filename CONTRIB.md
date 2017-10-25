@@ -15,6 +15,11 @@ comment you are working on a pull request. A maintainer will then set the approp
 If your branch is ready for production, submit a pull request. A maintainer will review your pull
 request and (hopefully) accept it.
 
+## Pull Requests
+Every PR should pass the CodeClimate check (unless you provide good arguments for failing a check) 
+and the Travis-CI tests (which can be run locally with `python manage.py test`).
+If a PR fails the CI, I probably won't even look at it.
+
 ## What to do?
 Look in the issue tracker. Generally the bugs with nobody assigned to that do not bear the tag
 `in-progress` are up for help. Please post a comment stating you are working on that. A maintainer
