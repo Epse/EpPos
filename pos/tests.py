@@ -73,19 +73,19 @@ class OrderViewTestCase(TestCase):
     product_list = []
 
     def setUp(self):
-        self.product_list.append(Product.objects\
+        self.product_list.append(Product.objects
                                  .create(product_stockApplies=False,
                                          product_name="one",
                                          product_price=Decimal(12)))
-        self.product_list.append(Product.objects\
+        self.product_list.append(Product.objects
                                  .create(product_stockApplies=False,
                                          product_name="two",
                                          product_price=Decimal(4)))
-        self.product_list.append(Product.objects\
+        self.product_list.append(Product.objects
                                  .create(product_stockApplies=False,
                                          product_name="three",
                                          product_price=Decimal(0)))
-        self.product_list.append(Product.objects\
+        self.product_list.append(Product.objects
                                  .create(product_stockApplies=False,
                                          product_name="four",
                                          product_price=Decimal(5000)))

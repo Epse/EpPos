@@ -14,9 +14,10 @@ def parse_json_product_list(json_string):
         product.product_id = product_dict['product_id']
         product.product_name = product_dict['product_name']
         # Turns the Number into a Decimal, than limits to two decimal places
-        product.product_price = decimal.Decimal( \
-                                                 product_dict['product_price']) \
-                                       .quantize(decimal.Decimal('0.01'))
+        product.product_price = decimal\
+               .Decimal(
+                         product_dict['product_price']) \
+               .quantize(decimal.Decimal('0.01'))
         product.product_stock = product_dict['product_stock']
         product.product_stockApplies = product_dict['product_stockApplies']
         resulting_list.append(product)

@@ -69,9 +69,9 @@ def addition(request, operation):
                 current_order_parsed_list)
             current_order.order_totalprice = (
                 decimal.Decimal(
-                    product_to_add.product_price) \
+                    product_to_add.product_price)
                 + current_order.order_totalprice) \
-                         .quantize(decimal.Decimal('0.01'))
+                .quantize(decimal.Decimal('0.01'))
             current_order.save()
 
         elif operation == "reset":
@@ -80,17 +80,23 @@ def addition(request, operation):
             current_order.save()
 
         else:
-            product_in_database = Product.objects.filter(product_name=operation) \
-                                                 .first()
+            product_in_database = Product.objects\
+                                         .filter(product_name=operation) \
+                                         .first()
             if product_in_database is not None:
-                parsed_json_list = helper.parse_json_product_list(current_order.order_list)
+                parsed_json_list = helper\
+                                   .parse_json_product_list(
+                                       current_order.order_list)
 
                 i = parsed_json_list.index(product_in_database)
                 del parsed_json_list[i]
-                current_order.order_list = helper.product_list_to_json(parsed_json_list)
-                current_order.order_totalprice = (current_order.order_totalprice - \
-                                                   product_in_database.product_price)\
-                             .quantize(decimal.Decimal('0.01'))
+                current_order.order_list = helper\
+                             .product_list_to_json(
+                                 parsed_json_list)
+                current_order.order_totalprice = (
+                    current_order.order_totalprice - 
+                    product_in_database.product_price)\
+                    .quantize(decimal.Decimal('0.01'))
 
                 if current_order.order_totalprice < 0:
                     logging.error("prices below 0! You might be running in to the 10 digit total order price limit")
@@ -154,7 +160,9 @@ def payment_card(request):
     cash, current_order = helper.setup_order_handling(request)
 
     for product in helper.parse_json_product_list(current_order.order_list):
-        product_in_database = Product.objects.get(product_name=product.product_name)
+        product_in_database = Product\
+                              .objects\
+                              .get(product_name=product.product_name)
         if product_in_database.product_stockApplies:
             product_in_database.product_stock -= 1
             product_in_database.save()
@@ -175,6 +183,7 @@ def payment_card(request):
             'amount_added': 0,
     }
     return render(request, 'pos/addition.html', context=context)
+
 
 # We can't use the `@login_required` decorator here because this
 # page is never shown to the user and only used in AJAX requests
