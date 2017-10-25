@@ -4,8 +4,6 @@ python:
   - "3.5.4"
 
 before_install:
-  - export DJANGO_SETTINGS_MODULE=EpPos.settings
-  - export PYTHONPATH=$HOME/builds/Epse/EpPos
   - export PIP_USE_MIRRORS=true
 
 install:
