@@ -26,7 +26,6 @@ SECRET_KEY = 'oybwg_apb%v6^d$ff2mvhx%#hl)s2^6k3uuz=#b*8-j0hty6$3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'epsepos.ddns.net', '192.168.0.170', 192.168.0.245']
 ALLOWED_HOSTS = ['*']
 
 

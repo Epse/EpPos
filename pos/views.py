@@ -52,23 +52,22 @@ def order(request):
 
 @login_required
 def addition(request, operation):
-    cash, _ = Cash.objects.get_or_create(id=0)
     succesfully_payed = False
     payment_error = False
     amount_added = 0
-    q = Order.objects.filter(order_user=request.user.username, order_done=False).order_by('order_lastChange')
-    if q.count() >= 1:
-        current_order = q[0]
-    else:
-        current_order = Order.objects.create(order_user=request.user.username)
+    cash, current_order = helper.setup_order_handling(request)
 
     if operation:
         if operation.isdecimal():
-            current_order_parsed_list = helper.parse_json_product_list(current_order.order_list)
+            current_order_parsed_list = helper.parse_json_product_list(
+                current_order.order_list)
             product_to_add = Product.objects.get(product_id=operation)
             current_order_parsed_list.append(product_to_add)
-            current_order.order_list = helper.product_list_to_json(current_order_parsed_list)
-            current_order.order_totalprice = ( decimal.Decimal(product_to_add.product_price) + current_order.order_totalprice ).quantize(decimal.Decimal('0.01'))
+            current_order.order_list = helper.product_list_to_json(
+                current_order_parsed_list)
+            current_order.order_totalprice = (decimal.Decimal(product_to_add.product_price) \
+                                               + current_order.order_totalprice) \
+                         .quantize(decimal.Decimal('0.01'))
             current_order.save()
 
         elif operation == "reset":
@@ -77,14 +76,17 @@ def addition(request, operation):
             current_order.save()
 
         else:
-            product_in_database = Product.objects.filter(product_name = operation).first()
+            product_in_database = Product.objects.filter(product_name=operation) \
+                                                 .first()
             if product_in_database is not None:
                 parsed_json_list = helper.parse_json_product_list(current_order.order_list)
 
                 i = parsed_json_list.index(product_in_database)
                 del parsed_json_list[i]
                 current_order.order_list = helper.product_list_to_json(parsed_json_list)
-                current_order.order_totalprice = ( current_order.order_totalprice - product_in_database.product_price ).quantize(decimal.Decimal('0.01'))
+                current_order.order_totalprice = (current_order.order_totalprice - \
+                                                   product_in_database.product_price)\
+                             .quantize(decimal.Decimal('0.01'))
 
                 if current_order.order_totalprice < 0:
                     logging.error("prices below 0! You might be running in to the 10 digit total order price limit")
@@ -105,15 +107,10 @@ def addition(request, operation):
 
 @login_required
 def payment_cash(request):
-    cash, _ = Cash.objects.get_or_create(id=0)
     succesfully_payed = False
     payment_error = False
     amount_added = 0
-    q = Order.objects.filter(order_user=request.user.username, order_done=False).order_by('order_lastChange')
-    if q.count() >= 1:
-        current_order = q[0]
-    else:
-        current_order = Order.objects.create(order_user=request.user.username)
+    cash, current_order = helper.setup_order_handling(request)
 
     for ordered_product in helper.parse_json_product_list(current_order.order_list):
         product = Product.objects.get(
@@ -146,16 +143,10 @@ def payment_cash(request):
 
 @login_required
 def payment_card(request):
-    cash, _ = Cash.objects.get_or_create(id=0)
     succesfully_payed = False
     payment_error = False
     amount_added = 0
-
-    q = Order.objects.filter(order_user=request.user.username, order_done=False).order_by('order_lastChange')
-    if q.count() >= 1:
-        current_order = q[0]
-    else:
-        current_order = Order.objects.create(order_user=request.user.username)
+    cash, current_order = helper.setup_order_handling(request)
 
     for product in helper.parse_json_product_list(current_order.order_list):
         product_in_database = Product.objects.get(product_name=product.product_name)

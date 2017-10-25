@@ -4,6 +4,7 @@ import logging
 import json
 import re
 
+
 def validate_product_name(prodname):
     regex_string = r'^\w[\w ]*$'
     search = re.compile(regex_string).search
@@ -11,11 +12,13 @@ def validate_product_name(prodname):
     if not result:
         raise ValidationError("Please only use letters, numbers and underscores or spaces. The name cannot start with a space.")
 
+
 # Create your models here.
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
-    product_name = models.CharField(max_length=100, validators=[validate_product_name])
-    product_price = models.DecimalField(max_digits=7,decimal_places=2)
+    product_name = models.CharField(max_length=100,
+                                    validators=[validate_product_name])
+    product_price = models.DecimalField(max_digits=7, decimal_places=2)
     product_stockApplies = models.BooleanField()
     product_stock = models.PositiveSmallIntegerField(default=0)
 
@@ -41,12 +44,16 @@ class Product(models.Model):
         self.product_stockApplies = jsonDict['product_stockApplies']
         self.product_stock = jsonDict['product_stock']
 
+
 class Order(models.Model):
     order_user = models.CharField(max_length=50)
     order_list = models.CharField(max_length=10000, default="[]")
-    order_totalprice = models.DecimalField(max_digits=10,decimal_places=2,default=0)
+    order_totalprice = models.DecimalField(max_digits=10,
+                                           decimal_places=2,
+                                           default=0)
     order_done = models.BooleanField(default=False)
     order_lastChange = models.DateField(auto_now=True)
 
+
 class Cash(models.Model):
-    cash_amount = models.DecimalField(max_digits=7, decimal_places=2,default=0)
+    cash_amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
