@@ -1,28 +1,43 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.test import SimpleTestCase, Client, TestCase
+from django.urls.exceptions import NoReverseMatch
+from django.test import Client, TestCase
 from django.core.urlresolvers import reverse
 from decimal import *
 from . import helper
 from .models import Product, Cash, validate_product_name, Order
 
 
-class HelperTestCase(SimpleTestCase):
+def _product_helper():
+    product_list = []
+    product_list.append(Product.objects.create(
+        product_id=0,
+        product_stockApplies=False,
+        product_name="one",
+        product_price=Decimal(12)))
+    product_list.append(Product.objects.create(
+        product_id=1,
+        product_stockApplies=False,
+        product_name="two",
+        product_price=Decimal(4)))
+    product_list.append(Product.objects.create(
+        product_id=2,
+        product_stockApplies=False,
+        product_name="three",
+        product_price=Decimal(0)))
+    product_list.append(Product.objects.create(
+        product_id=3,
+        product_stockApplies=False,
+        product_name="four",
+        product_price=Decimal(5000)))
+    return product_list
+
+
+class HelperTestCase(TestCase):
     product_list = []
 
     def setUp(self):
-        self.product_list.append(Product(product_stockApplies=False,
-                                         product_name="one",
-                                         product_price=Decimal(12)))
-        self.product_list.append(Product(product_stockApplies=False,
-                                         product_name="two",
-                                         product_price=Decimal(4)))
-        self.product_list.append(Product(product_stockApplies=False,
-                                         product_name="three",
-                                         product_price=Decimal(0)))
-        self.product_list.append(Product(product_stockApplies=False,
-                                         product_name="four",
-                                         product_price=Decimal(5000)))
+        self.product_list = _product_helper()
 
     def test_json_parsing(self):
         json = helper.product_list_to_json(self.product_list)
@@ -73,22 +88,7 @@ class OrderViewTestCase(TestCase):
     product_list = []
 
     def setUp(self):
-        self.product_list.append(Product.objects
-                                 .create(product_stockApplies=False,
-                                         product_name="one",
-                                         product_price=Decimal(12)))
-        self.product_list.append(Product.objects
-                                 .create(product_stockApplies=False,
-                                         product_name="two",
-                                         product_price=Decimal(4)))
-        self.product_list.append(Product.objects
-                                 .create(product_stockApplies=False,
-                                         product_name="three",
-                                         product_price=Decimal(0)))
-        self.product_list.append(Product.objects
-                                 .create(product_stockApplies=False,
-                                         product_name="four",
-                                         product_price=Decimal(5000)))
+        self.product_list = _product_helper()
 
         self.user = User.objects.create_user('test',
                                              'test@example.com',
@@ -112,7 +112,7 @@ class OrderViewTestCase(TestCase):
                              self.product_list[i].product_price)
 
 
-class ProductNameTestCase(SimpleTestCase):
+class ProductNameTestCase(TestCase):
     test_names_correct = []
     test_names_incorrect = []
 
@@ -146,22 +146,8 @@ class OrderTestCase(TestCase):
         self.user = User.objects.create_user('test',
                                              'test@example.com',
                                              'pswd')
-        self.product_list.append(Product.objects.create(
-            product_stockApplies=False,
-            product_name="one",
-            product_price=Decimal(12)))
-        self.product_list.append(Product.objects.create(
-            product_stockApplies=False,
-            product_name="two",
-            product_price=Decimal(4)))
-        self.product_list.append(Product.objects.create(
-            product_stockApplies=False,
-            product_name="three",
-            product_price=Decimal(0)))
-        self.product_list.append(Product.objects.create(
-            product_stockApplies=False,
-            product_name="four",
-            product_price=Decimal(5000)))
+
+        self.product_list = _product_helper()
 
         # Set some initial cash amount
         cash, _ = Cash.objects.get_or_create(id=0)
@@ -212,3 +198,21 @@ class OrderTestCase(TestCase):
         # Check if amount added to cash
         cash, _ = Cash.objects.get_or_create(id=0)
         self.assertEqual(cash.cash_amount, order_price + self.initial_amount)
+
+
+class OrderManagementTestCase(TestCase):
+    product_list = []
+
+    def setUp(self):
+        self.product_list = _product_helper()
+        self.user = User.objects.create_user('test',
+                                             'test@example.com',
+                                             'pswd')
+        self.client.login(username='test', password='pswd')
+
+    def test_add_to_order(self):
+        response = self.client.get(reverse('order_add_product', args=[1]))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('order_add_product', args=['100']))
+        self.assertEqual(response.status_code, 404)
