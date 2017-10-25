@@ -174,7 +174,7 @@ class OrderTestCase(TestCase):
         # Add things to basket and while we're at it, calculate the total price
         order_price = 0
         for product in self.product_list:
-            response = self.client.get(reverse('addition',
+            response = self.client.get(reverse('order_add_product',
                                                args=[product.product_id]))
             self.assertEqual(response.status_code, 200)
             order_price += product.product_price

@@ -1,7 +1,7 @@
 import logging
 import decimal
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.template import loader
 from django.core.exceptions import MultipleObjectsReturned
 from django.contrib.auth import authenticate
@@ -53,55 +53,8 @@ def order(request):
 
 
 @login_required
-def addition(request, operation):
-    succesfully_payed = False
-    payment_error = False
-    amount_added = 0
+def addition(request):
     cash, current_order = helper.setup_order_handling(request)
-
-    if operation:
-        if operation.isdecimal():
-            current_order_parsed_list = helper.parse_json_product_list(
-                current_order.order_list)
-            product_to_add = Product.objects.get(product_id=operation)
-            current_order_parsed_list.append(product_to_add)
-            current_order.order_list = helper.product_list_to_json(
-                current_order_parsed_list)
-            current_order.order_totalprice = (
-                decimal.Decimal(
-                    product_to_add.product_price) +
-                current_order.order_totalprice) \
-                .quantize(decimal.Decimal('0.01'))
-            current_order.save()
-
-        elif operation == "reset":
-            current_order.order_list = "[]"
-            current_order.order_totalprice = 0
-            current_order.save()
-
-        else:
-            product_in_database = Product.objects\
-                                         .filter(product_name=operation) \
-                                         .first()
-            if product_in_database is not None:
-                parsed_json_list = helper\
-                                   .parse_json_product_list(
-                                       current_order.order_list)
-
-                i = parsed_json_list.index(product_in_database)
-                del parsed_json_list[i]
-                current_order.order_list = helper\
-                             .product_list_to_json(
-                                 parsed_json_list)
-                current_order.order_totalprice = (
-                    current_order.order_totalprice -
-                    product_in_database.product_price)\
-                    .quantize(decimal.Decimal('0.01'))
-
-                if current_order.order_totalprice < 0:
-                    logging.error("prices below 0! You might be running in to the 10 digit total order price limit")
-                    current_order.order_totalprice = 0
-                current_order.save()
 
     totalprice = current_order.order_totalprice
     order_list = helper.parse_json_product_list(current_order.order_list)
@@ -109,11 +62,78 @@ def addition(request, operation):
             'order_list': order_list,
             'totalprice': totalprice,
             'cash': cash,
-            'succesfully_payed': succesfully_payed,
-            'payment_error': payment_error,
-            'amount_added': amount_added,
+            'succesfully_payed': False,
+            'payment_error': False,
+            'amount_added': 0,
     }
     return render(request, 'pos/addition.html', context=context)
+
+
+@login_required
+def order_add_product(request, product_id):
+    cash, current_order = helper.setup_order_handling(request)
+
+    if not product_id.isdecimal():
+        return HttpResponseBadRequest('BAD REQUEST\nproduct ID is not decimal')
+
+    current_order_parsed_list = helper.parse_json_product_list(
+        current_order.order_list)
+    product_to_add = Product.objects.get(product_id=product_id)
+    current_order_parsed_list.append(product_to_add)
+    current_order.order_list = helper.product_list_to_json(
+        current_order_parsed_list)
+    current_order.order_totalprice = (
+        decimal.Decimal(
+            product_to_add.product_price) +
+            current_order.order_totalprice) \
+                 .quantize(decimal.Decimal('0.01'))
+    current_order.save()
+
+    return addition(request)
+
+
+@login_required
+def order_remove_product(request, product_name):
+    cash, current_order = helper.setup_order_handling(request)
+    product_in_database = Product.objects\
+                                 .filter(product_name=product_name) \
+                                 .first()
+    if product_in_database is None:
+        return HttpResponseBadRequest('BAD REQUEST: Product does not exist')
+
+    parsed_json_list = helper\
+                       .parse_json_product_list(
+                           current_order.order_list)
+
+    i = parsed_json_list.index(product_in_database)
+    del parsed_json_list[i]
+    current_order.order_list = helper\
+                 .product_list_to_json(
+                     parsed_json_list)
+    current_order.order_totalprice = (
+        current_order.order_totalprice -
+        product_in_database.product_price)\
+                 .quantize(decimal.Decimal('0.01'))
+
+    if current_order.order_totalprice < 0:
+        logging.error("prices below 0! You might be running in to the 10 digit total order price limit")
+        current_order.order_totalprice = 0
+
+    current_order.save()
+
+    # I only need default values.
+    return addition(request)
+
+
+@login_required
+def reset_order(request):
+    cash, current_order = helper.setup_order_handling(request)
+    current_order.order_list = "[]"
+    current_order.order_totalprice = 0
+    current_order.save()
+
+    # I just need default values. Quite useful
+    return addition(request)
 
 
 @login_required
