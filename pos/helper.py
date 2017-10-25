@@ -1,6 +1,6 @@
 import json
 import decimal
-from .models import Product, Order
+from .models import Product, Order, Cash
 
 
 # Takes the standard JSON representation of these arrays
@@ -55,9 +55,9 @@ def setup_order_handling(request):
 
 
 def get_current_user_order(username):
-    q = Order.objects.filter(order_user=rusername, order_done=False)\
+    q = Order.objects.filter(order_user=username, order_done=False)\
                      .order_by('order_lastChange')
     if q.count() >= 1:
         return q[0]
     else:
-        return Order.objects.create(order_user=request.user.username)
+        return Order.objects.create(order_user=username)

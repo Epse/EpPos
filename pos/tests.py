@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase, Client, TestCase
 from django.core.urlresolvers import reverse
 from decimal import *
-from .helper import parse_json_product_list, product_list_to_json
+from . import helper
 from .models import Product, Cash, validate_product_name, Order
 
 
@@ -25,8 +25,8 @@ class HelperTestCase(SimpleTestCase):
                                          product_price=Decimal(5000)))
 
     def test_json_parsing(self):
-        json = product_list_to_json(self.product_list)
-        test_list = parse_json_product_list(json)
+        json = helper.product_list_to_json(self.product_list)
+        test_list = helper.parse_json_product_list(json)
 
         self.assertEqual(len(test_list), len(self.product_list))
         # The Decimal is necessary due to some Django magic
