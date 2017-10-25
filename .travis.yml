@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.6.3"
+  - "3.5.4"
+  - "3.3.7"
+
+install:
+  pip install django --use-mirrors
+
+script: python manage.py test
