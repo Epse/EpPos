@@ -69,8 +69,8 @@ def addition(request, operation):
                 current_order_parsed_list)
             current_order.order_totalprice = (
                 decimal.Decimal(
-                    product_to_add.product_price)
-                + current_order.order_totalprice) \
+                    product_to_add.product_price) +
+                current_order.order_totalprice) \
                 .quantize(decimal.Decimal('0.01'))
             current_order.save()
 
@@ -94,7 +94,7 @@ def addition(request, operation):
                              .product_list_to_json(
                                  parsed_json_list)
                 current_order.order_totalprice = (
-                    current_order.order_totalprice - 
+                    current_order.order_totalprice -
                     product_in_database.product_price)\
                     .quantize(decimal.Decimal('0.01'))
 
