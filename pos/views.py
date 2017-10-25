@@ -11,6 +11,7 @@ from django.shortcuts import redirect
 from .models import Product, Order, Cash
 from . import helper
 
+
 def login(request):
     if request.method == "GET":
         if 'next' in request.GET:
@@ -50,6 +51,7 @@ def order(request):
     }
     return render(request, 'pos/order.html', context=context)
 
+
 @login_required
 def addition(request, operation):
     succesfully_payed = False
@@ -65,8 +67,10 @@ def addition(request, operation):
             current_order_parsed_list.append(product_to_add)
             current_order.order_list = helper.product_list_to_json(
                 current_order_parsed_list)
-            current_order.order_totalprice = (decimal.Decimal(product_to_add.product_price) \
-                                               + current_order.order_totalprice) \
+            current_order.order_totalprice = (
+                decimal.Decimal(
+                    product_to_add.product_price) \
+                + current_order.order_totalprice) \
                          .quantize(decimal.Decimal('0.01'))
             current_order.save()
 
@@ -104,6 +108,7 @@ def addition(request, operation):
             'amount_added': amount_added,
     }
     return render(request, 'pos/addition.html', context=context)
+
 
 @login_required
 def payment_cash(request):

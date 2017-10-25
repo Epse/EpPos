@@ -14,7 +14,8 @@ def parse_json_product_list(json_string):
         product.product_id = product_dict['product_id']
         product.product_name = product_dict['product_name']
         # Turns the Number into a Decimal, than limits to two decimal places
-        product.product_price = decimal.Decimal(product_dict['product_price']) \
+        product.product_price = decimal.Decimal( \
+                                                 product_dict['product_price']) \
                                        .quantize(decimal.Decimal('0.01'))
         product.product_stock = product_dict['product_stock']
         product.product_stockApplies = product_dict['product_stockApplies']
@@ -44,15 +45,18 @@ def product_list_to_json(product_list):
 
     return json_string
 
+
 def setup_order_handling(request):
     cash, _ = Cash.objects.get_or_create(id=0)
-    q = Order.objects.filter(order_user=request.user.username, order_done=False).order_by('order_lastChange')
-    if q.count() >= 1:
-        current_order = q[0]
-    else:
-        current_order = Order.objects.create(order_user=request.user.username)
+    current_order = get_current_user_order(request.user.username)
 
     return (cash, current_order)
 
+
 def get_current_user_order(username):
-        return Order.objects.filter(order_user=username, order_done=False).order_by('order_lastChange')[0]
+    q = Order.objects.filter(order_user=rusername, order_done=False)\
+                     .order_by('order_lastChange')
+    if q.count() >= 1:
+        return q[0]
+    else:
+        return Order.objects.create(order_user=request.user.username)

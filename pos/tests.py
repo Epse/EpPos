@@ -9,6 +9,7 @@ from .models import Product, Cash, validate_product_name, Order
 
 class HelperTestCase(SimpleTestCase):
     product_list = []
+
     def setUp(self):
         self.product_list.append(Product(product_stockApplies=False,
                                          product_name="one",
@@ -72,20 +73,26 @@ class OrderViewTestCase(TestCase):
     product_list = []
 
     def setUp(self):
-        self.product_list.append(Product.objects.create(product_stockApplies=False,
-                                                        product_name="one",
-                                                        product_price=Decimal(12)))
-        self.product_list.append(Product.objects.create(product_stockApplies=False,
-                                                        product_name="two",
-                                                        product_price=Decimal(4)))
-        self.product_list.append(Product.objects.create(product_stockApplies=False,
-                                                        product_name="three",
-                                                        product_price=Decimal(0)))
-        self.product_list.append(Product.objects.create(product_stockApplies=False,
-                                                        product_name="four",
-                                                        product_price=Decimal(5000)))
+        self.product_list.append(Product.objects\
+                                 .create(product_stockApplies=False,
+                                         product_name="one",
+                                         product_price=Decimal(12)))
+        self.product_list.append(Product.objects\
+                                 .create(product_stockApplies=False,
+                                         product_name="two",
+                                         product_price=Decimal(4)))
+        self.product_list.append(Product.objects\
+                                 .create(product_stockApplies=False,
+                                         product_name="three",
+                                         product_price=Decimal(0)))
+        self.product_list.append(Product.objects\
+                                 .create(product_stockApplies=False,
+                                         product_name="four",
+                                         product_price=Decimal(5000)))
 
-        self.user = User.objects.create_user('test', 'test@example.com', 'pswd')
+        self.user = User.objects.create_user('test',
+                                             'test@example.com',
+                                             'pswd')
 
     def test_view(self):
         # The Order view has the `@login_required` decorator
@@ -139,18 +146,22 @@ class OrderTestCase(TestCase):
         self.user = User.objects.create_user('test',
                                              'test@example.com',
                                              'pswd')
-        self.product_list.append(Product.objects.create(product_stockApplies=False,
-                                                        product_name="one",
-                                                        product_price=Decimal(12)))
-        self.product_list.append(Product.objects.create(product_stockApplies=False,
-                                                        product_name="two",
-                                                        product_price=Decimal(4)))
-        self.product_list.append(Product.objects.create(product_stockApplies=False,
-                                                        product_name="three",
-                                                        product_price=Decimal(0)))
-        self.product_list.append(Product.objects.create(product_stockApplies=False,
-                                                        product_name="four",
-                                                        product_price=Decimal(5000)))
+        self.product_list.append(Product.objects.create(
+            product_stockApplies=False,
+            product_name="one",
+            product_price=Decimal(12)))
+        self.product_list.append(Product.objects.create(
+            product_stockApplies=False,
+            product_name="two",
+            product_price=Decimal(4)))
+        self.product_list.append(Product.objects.create(
+            product_stockApplies=False,
+            product_name="three",
+            product_price=Decimal(0)))
+        self.product_list.append(Product.objects.create(
+            product_stockApplies=False,
+            product_name="four",
+            product_price=Decimal(5000)))
 
         # Set some initial cash amount
         cash, _ = Cash.objects.get_or_create(id=0)

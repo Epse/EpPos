@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/pos', permanent=True)),
     url(r'^pos/', include('pos.urls')),
     url(r'^admin/', admin.site.urls, name='admin'),
-    url(r'^accounts/logout/$', auth_views.logout, { 'next_page': '/pos/order'} , name='logout'),
-    url(r'^accounts/login/$', login , name='login'),
+    url(r'^accounts/logout/$', auth_views.logout,
+        {'next_page': '/pos/order'}, name='logout'),
+    url(r'^accounts/login/$', login, name='login'),
 ]
