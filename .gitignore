@@ -66,5 +66,5 @@ passwds.txt
 # and neither locally changed settings
 EpPos2/settings_local.py
 
-# Random python file
+# Local database
 db.sqlite3
