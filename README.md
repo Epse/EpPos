@@ -43,5 +43,4 @@ we use the Apache license.
 Epse aka. Stef Pletinck
 
 ## Hall of fame
-*God this is empty. Any people with accepted pull requests will end up right here.*
-:worried:
+* [Sebastien Spaeth](https://github.com/spaetz)
