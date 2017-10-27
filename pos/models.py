@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-import logging
 import json
 import re
 
@@ -10,7 +9,9 @@ def validate_product_name(prodname):
     search = re.compile(regex_string).search
     result = bool(search(prodname))
     if not result:
-        raise ValidationError("Please only use letters, numbers and underscores or spaces. The name cannot start with a space.")
+        raise ValidationError("Please only use letters, "
+                              "numbers and underscores or spaces. "
+                              "The name cannot start with a space.")
 
 
 # Create your models here.
@@ -36,7 +37,7 @@ class Product(models.Model):
     def to_json(self):
         return json.dumps(self.__jsonDict__)
 
-    def from_json(json):
+    def from_json(self, json):
         jsonDict = json.loads(json)
         self.product_id = jsonDict['product_id']
         self.product_name = jsonDict['product_name']

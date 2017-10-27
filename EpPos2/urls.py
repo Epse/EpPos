@@ -16,7 +16,6 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.contrib.auth import forms as auth_forms
 from django.views.generic.base import RedirectView
 from pos.views import login
 
