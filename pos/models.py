@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-import json
 import re
 
 
@@ -14,7 +13,6 @@ def validate_product_name(prodname):
                               "The name cannot start with a space.")
 
 
-# Create your models here.
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
     product_name = models.CharField(max_length=100,
@@ -33,17 +31,6 @@ class Product(models.Model):
         if not self.pk:
             self.full_clean()
         super(Product, self).save(*args, **kwargs)
-
-    def to_json(self):
-        return json.dumps(self.__jsonDict__)
-
-    def from_json(self, json):
-        jsonDict = json.loads(json)
-        self.product_id = jsonDict['product_id']
-        self.product_name = jsonDict['product_name']
-        self.product_price = jsonDict['product_price']
-        self.product_stockApplies = jsonDict['product_stockApplies']
-        self.product_stock = jsonDict['product_stock']
 
 
 class Order(models.Model):
