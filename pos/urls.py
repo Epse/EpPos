@@ -8,7 +8,7 @@ urlpatterns = [
         views.addition, name='addition'),
     url(r'^order/add/(?P<product_id>[0-9]*/?$)',
         views.order_add_product, name='order_add_product'),
-    url(r'^order/remove/(?P<product_name>[\w \+\_]*)/?$',
+    url(r'^order/remove/(?P<product_id>[0-9]*)/?$',
         views.order_remove_product, name="order_remove_product"),
     url(r'^order/reset/?$', views.reset_order, name='reset_order'),
     url(r'^order/?$', views.order, name='order'),

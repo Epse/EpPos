@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.conf import settings
 import re
 
 
@@ -14,18 +15,17 @@ def validate_product_name(prodname):
 
 
 class Product(models.Model):
-    product_id = models.AutoField(primary_key=True)
-    product_name = models.CharField(max_length=100,
-                                    validators=[validate_product_name])
-    product_price = models.DecimalField(max_digits=7, decimal_places=2)
-    product_stockApplies = models.BooleanField()
-    product_stock = models.PositiveSmallIntegerField(default=0)
+    name = models.CharField(max_length=100,
+                            validators=[validate_name])
+    price = models.DecimalField(max_digits=7, decimal_places=2)
+    stock_applies = models.BooleanField()
+    stock = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
-        return self.product_name
+        return self.name
 
     def clean(self):
-        validate_product_name(self.product_name)
+        validate_product_name(self.name)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -34,16 +34,23 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    order_user = models.CharField(max_length=50)
-    order_list = models.CharField(max_length=10000, default="[]")
-    order_totalprice = models.DecimalField(max_digits=10,
-                                           decimal_places=2,
-                                           default=0)
-    order_done = models.BooleanField(default=False)
-    order_lastChange = models.DateField(auto_now=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    total_price = models.DecimalField(max_digits=10,
+                                      decimal_places=2,
+                                      default=0)
+    done = models.BooleanField(default=False)
+    last_change = models.DateTimeField(auto_now=True)
 
 
 class Cash(models.Model):
-    cash_amount = models.DecimalField(max_digits=7,
-                                      decimal_places=2,
-                                      default=0)
+    amount = models.DecimalField(max_digits=7,
+                                 decimal_places=2,
+                                 default=0)
+
+
+class Order_Item(models.Model):
+    product = models.ForeignKey(Product)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=7, decimal_places=2)
+    name = models.CharField(max_length=100)
+    timestamp = models.DateTimeField(auto_now=True)
