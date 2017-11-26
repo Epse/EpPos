@@ -4,70 +4,52 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from decimal import Decimal
 from . import helper
-from .models import Product, Cash, validate_product_name
+from .models import Order, Product, Cash, validate_product_name
 
 
-def _product_helper():
-    product_list = []
-    product_list.append(Product.objects.create(
-        product_id=0,
-        product_stockApplies=False,
-        product_name="one",
-        product_price=Decimal(12)))
-    product_list.append(Product.objects.create(
-        product_id=1,
-        product_stockApplies=False,
-        product_name="two",
-        product_price=Decimal(4)))
-    product_list.append(Product.objects.create(
-        product_id=2,
-        product_stockApplies=False,
-        product_name="three",
-        product_price=Decimal(0)))
-    product_list.append(Product.objects.create(
-        product_id=3,
-        product_stockApplies=False,
-        product_name="four",
-        product_price=Decimal(5000)))
-    return product_list
-
-
-class HelperTestCase(TestCase):
+def _helper():
+    list = []
     product_list = []
 
-    def setUp(self):
-        self.product_list = _product_helper()
+    user = User.objects.create_user(
+        'test', 'test@example.com', 'pswd')
+    order = Order.objects.create(
+        user=user,
+        total_price=0,
+        done=False)
 
-    def test_json_parsing(self):
-        json = helper.product_list_to_json(self.product_list)
-        test_list = helper.parse_json_product_list(json)
+    price = 0
 
-        self.assertEqual(len(test_list), len(self.product_list))
-        # The Decimal is necessary due to some Django magic
-        for i in range(0, len(test_list)):
-            self.assertEqual(test_list[i].product_price,
-                             Decimal(self.product_list[i].product_price))
-            self.assertEqual(test_list[i].product_name,
-                             self.product_list[i].product_name)
+    for i in range(4):
+        prod = Product.objects.create(
+            stock_applies=False,
+            name=str(i),
+            price=Decimal(3*i))
+        product_list.append(prod)
+        list.append(helper.order_item_from_product(prod, order))
+        price += 3*i
+
+    order.total_price = Decimal(price)
+    order.save()
+
+    return user, list, product_list
 
 
 class CashViewTestCase(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user('test',
-                                             'test@example.com',
-                                             'pswd')
+        self.user, _, _ = _helper()
 
-    def test_cash_set(self):
+    def test_set(self):
         self.client.login(username='test', password='pswd')
         response = self.client.get(reverse('cash', args=[5]))
         self.assertEqual(response.status_code, 200)
 
         cash, _ = Cash.objects.get_or_create(id=0)
-        self.assertEqual(cash.cash_amount, 5)
+        self.assertEqual(cash.amount, 5)
 
-    def test_cash_reset(self):
+    def test_reset(self):
         cash, _ = Cash.objects.get_or_create(id=0)
-        cash.cash_amount = 5
+        cash.amount = 5
         cash.save()
 
         self.client.login(username='test', password='pswd')
@@ -75,7 +57,7 @@ class CashViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         cash, _ = Cash.objects.get_or_create(id=0)
-        self.assertEqual(cash.cash_amount, 0)
+        self.assertEqual(cash.amount, 0)
 
     def test_not_logged_in(self):
         self.client.logout()
@@ -84,14 +66,10 @@ class CashViewTestCase(TestCase):
 
 
 class OrderViewTestCase(TestCase):
-    product_list = []
+    list = []
 
     def setUp(self):
-        self.product_list = _product_helper()
-
-        self.user = User.objects.create_user('test',
-                                             'test@example.com',
-                                             'pswd')
+        self.user, self.list, _ = _helper()
 
     def test_view(self):
         # The Order view has the `@login_required` decorator
@@ -100,15 +78,15 @@ class OrderViewTestCase(TestCase):
         response = self.client.get(reverse('order'))
         self.assertEqual(response.status_code, 200)
 
-        response_product_list = response.context['product_list']()
+        response_list = response.context['list']()
 
-        self.assertEqual(len(response_product_list), len(self.product_list))
+        self.assertEqual(len(response_list), len(self.list))
 
-        for i in range(0, len(response_product_list)):
-            self.assertEqual(response_product_list[i].product_name,
-                             self.product_list[i].product_name)
-            self.assertEqual(response_product_list[i].product_price,
-                             self.product_list[i].product_price)
+        for i in range(0, len(response_list)):
+            self.assertEqual(response_list[i].name,
+                             self.list[i].name)
+            self.assertEqual(response_list[i].price,
+                             self.list[i].price)
 
 
 class ProductNameTestCase(TestCase):
@@ -138,38 +116,34 @@ class ProductNameTestCase(TestCase):
 
 
 class OrderTestCase(TestCase):
-    product_list = []
+    list = []
     initial_amount = 15
 
     def setUp(self):
-        self.user = User.objects.create_user('test',
-                                             'test@example.com',
-                                             'pswd')
-
-        self.product_list = _product_helper()
+        self.user, _, self.list = _helper()
 
         # Set some initial cash amount
         cash, _ = Cash.objects.get_or_create(id=0)
-        cash.cash_amount = self.initial_amount
+        cash.amount = self.initial_amount
         cash.save()
 
-    def order_creation_helper(self):
+    def creation_helper(self):
         self.client.login(username='test', password='pswd')
 
         # Add things to basket and while we're at it, calculate the total price
-        order_price = 0
-        for product in self.product_list:
+        price = helper.get_current_user_order(self.user.username).total_price
+        for product in self.list:
             response = self.client.get(reverse('order_add_product',
-                                               args=[product.product_id]))
+                                               args=[product.id]))
             self.assertEqual(response.status_code, 200)
-            order_price += product.product_price
+            price += product.price
 
         order = helper.get_current_user_order(self.user.username)
-        self.assertEqual(order.order_totalprice, order_price)
-        return order_price
+        self.assertEqual(order.total_price, price)
+        return price
 
     def test_card_payment(self):
-        self.order_creation_helper()
+        self.creation_helper()
 
         # Now pay by card
         response = self.client.get(reverse('payment_card'))
@@ -177,14 +151,14 @@ class OrderTestCase(TestCase):
 
         # Check if order is reset
         order = helper.get_current_user_order(self.user.username)
-        self.assertEqual(order.order_totalprice, 0)
+        self.assertEqual(order.total_price, 0)
 
         # Just to be sure, amount is not added to cash
         cash, _ = Cash.objects.get_or_create(id=0)
-        self.assertEqual(cash.cash_amount, self.initial_amount)
+        self.assertEqual(cash.amount, self.initial_amount)
 
     def test_cash_payment(self):
-        order_price = self.order_creation_helper()
+        price = self.creation_helper()
 
         # Now pay by cash
         response = self.client.get(reverse('payment_cash'))
@@ -192,26 +166,37 @@ class OrderTestCase(TestCase):
 
         # Check if order is reset
         order = helper.get_current_user_order(self.user.username)
-        self.assertEqual(order.order_totalprice, 0)
+        self.assertEqual(order.total_price, 0)
 
         # Check if amount added to cash
         cash, _ = Cash.objects.get_or_create(id=0)
-        self.assertEqual(cash.cash_amount, order_price + self.initial_amount)
+        self.assertEqual(cash.amount, price + self.initial_amount)
 
 
 class OrderManagementTestCase(TestCase):
-    product_list = []
+    list = []
 
     def setUp(self):
-        self.product_list = _product_helper()
-        self.user = User.objects.create_user('test',
-                                             'test@example.com',
-                                             'pswd')
+        self.user, _, self.list = _helper()
         self.client.login(username='test', password='pswd')
 
     def test_add_to_order(self):
-        response = self.client.get(reverse('order_add_product', args=[1]))
+        response = self.client.get(reverse('order_add_product',
+                                           args=[self.list[0].id]))
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(reverse('order_add_product', args=['100']))
         self.assertEqual(response.status_code, 404)
+
+
+class HelperTestCase(TestCase):
+    list = []
+    product_list = []
+
+    def setUp(self):
+        self.user, self.list, self.product_list = _helper()
+
+    def test_product_list_from_order(self):
+        order = helper.get_current_user_order(self.user.username)
+        self.assertEqual(self.product_list,
+                         helper.product_list_from_order(order))

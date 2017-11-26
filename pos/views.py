@@ -2,13 +2,12 @@ import logging
 import decimal
 from django.shortcuts import render, get_object_or_404
 from django.http import (HttpResponse,
-                         HttpResponseForbidden,
-                         HttpResponseBadRequest)
+                         HttpResponseForbidden)
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-from .models import Product, Order, Cash
+from .models import Product, Order, Cash, Order_Item
 from . import helper
 
 
@@ -45,22 +44,22 @@ def login(request):
 
 @login_required
 def order(request):
-    product_list = Product.objects.all
+    list = Product.objects.all
     context = {
-            'product_list': product_list,
+            'list': list,
     }
     return render(request, 'pos/order.html', context=context)
 
 
 @login_required
 def addition(request):
-    cash, current_order = helper.setup_order_handling(request)
+    cash, current_order = helper.setup_handling(request)
 
-    totalprice = current_order.order_totalprice
-    order_list = helper.parse_json_product_list(current_order.order_list)
+    total_price = current_order.total_price
+    list = Order_Item.objects.filter(order=current_order)
     context = {
-            'order_list': order_list,
-            'totalprice': totalprice,
+            'list': list,
+            'total_price': total_price,
             'cash': cash,
             'succesfully_payed': False,
             'payment_error': False,
@@ -71,18 +70,15 @@ def addition(request):
 
 @login_required
 def order_add_product(request, product_id):
-    cash, current_order = helper.setup_order_handling(request)
+    cash, current_order = helper.setup_handling(request)
 
-    current_order_parsed_list = helper.parse_json_product_list(
-        current_order.order_list)
-    product_to_add = get_object_or_404(Product, product_id=product_id)
-    current_order_parsed_list.append(product_to_add)
-    current_order.order_list = helper.product_list_to_json(
-        current_order_parsed_list)
-    current_order.order_totalprice = (
+    to_add = get_object_or_404(Product, id=product_id)
+    Order_Item.objects.create(order=current_order, product=to_add,
+                              price=to_add.price, name=to_add.name)
+    current_order.total_price = (
         decimal.Decimal(
-            product_to_add.product_price) +
-        current_order.order_totalprice) \
+            to_add.price) +
+        current_order.total_price) \
         .quantize(decimal.Decimal('0.01'))
     current_order.save()
 
@@ -90,33 +86,23 @@ def order_add_product(request, product_id):
 
 
 @login_required
-def order_remove_product(request, product_name):
-    cash, current_order = helper.setup_order_handling(request)
-    product_in_database = get_object_or_404(Product, product_name=product_name)
-    if product_in_database is None:
-        logging.WARN('Product remove requested with non-existing ID')
-        return HttpResponseBadRequest('BAD REQUEST: Product does not exist')
+def order_remove_product(request, product_id):
+    cash, current_order = helper.setup_handling(request)
+    order_product = get_object_or_404(Order_Item, id=product_id)
 
-    parsed_json_list = helper.parse_json_product_list(
-        current_order.order_list)
-
-    i = parsed_json_list.index(product_in_database)
-    del parsed_json_list[i]
-    current_order.order_list = helper\
-                 .product_list_to_json(
-                     parsed_json_list)
-    current_order.order_totalprice = (
-        current_order.order_totalprice -
-        product_in_database.product_price).quantize(
+    current_order.total_price = (
+        current_order.total_price -
+        order_product.price).quantize(
             decimal.Decimal('0.01'))
 
-    if current_order.order_totalprice < 0:
+    if current_order.total_price < 0:
         logging.error("prices below 0! "
                       "You might be running in to the "
                       "10 digit total order price limit")
-        current_order.order_totalprice = 0
+        current_order.total_price = 0
 
     current_order.save()
+    order_product.delete()
 
     # I only need default values.
     return addition(request)
@@ -124,9 +110,9 @@ def order_remove_product(request, product_name):
 
 @login_required
 def reset_order(request):
-    cash, current_order = helper.setup_order_handling(request)
-    current_order.order_list = "[]"
-    current_order.order_totalprice = 0
+    cash, current_order = helper.setup_handling(request)
+    current_order.list = "[]"
+    current_order.total_price = 0
     current_order.save()
 
     # I just need default values. Quite useful
@@ -138,30 +124,27 @@ def payment_cash(request):
     succesfully_payed = False
     payment_error = False
     amount_added = 0
-    cash, current_order = helper.setup_order_handling(request)
+    cash, current_order = helper.setup_handling(request)
 
-    for ordered_product in helper\
-            .parse_json_product_list(current_order.order_list):
-        product = Product.objects.get(
-            product_name=ordered_product.product_name)
-        if product.product_stockApplies:
-            product.product_stock -= 1
+    for product in helper.product_list_from_order(current_order):
+        if product.stock_applies:
+            product.stock -= 1
             product.save()
 
-        cash.cash_amount += ordered_product.product_price
-        amount_added += ordered_product.product_price
+        cash.amount += product.price
+        amount_added += product.price
         cash.save()
 
-    current_order.order_done = True
+    current_order.done = True
     current_order.save()
-    current_order = Order.objects.create(order_user=request.user.username)
+    current_order = Order.objects.create(user=request.user)
     succesfully_payed = True
 
-    totalprice = current_order.order_totalprice
-    order_list = helper.parse_json_product_list(current_order.order_list)
+    total_price = current_order.total_price
+    list = Order_Item.objects.filter(order=current_order)
     context = {
-            'order_list': order_list,
-            'totalprice': totalprice,
+            'list': list,
+            'total_price': total_price,
             'cash': cash,
             'succesfully_payed': succesfully_payed,
             'payment_error': payment_error,
@@ -174,26 +157,23 @@ def payment_cash(request):
 def payment_card(request):
     succesfully_payed = False
     payment_error = False
-    cash, current_order = helper.setup_order_handling(request)
+    cash, current_order = helper.setup_handling(request)
 
-    for product in helper.parse_json_product_list(current_order.order_list):
-        product_in_database = Product\
-                              .objects\
-                              .get(product_name=product.product_name)
-        if product_in_database.product_stockApplies:
-            product_in_database.product_stock -= 1
-            product_in_database.save()
+    for product in helper.product_list_from_order(current_order):
+        if product.stock_applies:
+            product.stock -= 1
+            product.save()
 
-        current_order.order_done = True
+        current_order.done = True
         current_order.save()
-        current_order = Order.objects.create(order_user=request.user.username)
+        current_order = Order.objects.create(user=request.user)
         succesfully_payed = True
 
-    totalprice = current_order.order_totalprice
-    order_list = helper.parse_json_product_list(current_order.order_list)
+    total_price = current_order.total_price
+    list = Order_Item.objects.filter(order=current_order)
     context = {
-            'order_list': order_list,
-            'totalprice': totalprice,
+            'list': list,
+            'total_price': total_price,
             'cash': cash,
             'succesfully_payed': succesfully_payed,
             'payment_error': payment_error,
@@ -207,7 +187,7 @@ def payment_card(request):
 def cash(request, amount):
     if (request.user.is_authenticated):
         cash, _ = Cash.objects.get_or_create(id=0)
-        cash.cash_amount = amount
+        cash.amount = amount
         cash.save()
         return HttpResponse('')
     else:
