@@ -1,7 +1,5 @@
-import json
-import decimal
 from django.contrib.auth.models import User
-from .models import Product, Order, Cash
+from .models import Order, Cash, Order_Item
 
 
 def setup_handling(request):
@@ -19,3 +17,20 @@ def get_current_user_order(username):
         return q[0]
     else:
         return Order.objects.create(user=usr)
+
+
+def order_item_from_product(product, order):
+    return Order_Item.objects.create(product=product,
+                                     order=order,
+                                     price=product.price,
+                                     name=product.name)
+
+
+def product_list_from_order(order):
+    product_list = []
+    order_item_list = Order_Item.objects.filter(order=order)
+
+    for order_item in order_item_list:
+        product_list.append(order_item.product)
+
+    return product_list

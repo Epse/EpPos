@@ -2,8 +2,7 @@ import logging
 import decimal
 from django.shortcuts import render, get_object_or_404
 from django.http import (HttpResponse,
-                         HttpResponseForbidden,
-                         HttpResponseBadRequest)
+                         HttpResponseForbidden)
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
@@ -58,7 +57,6 @@ def addition(request):
 
     total_price = current_order.total_price
     list = Order_Item.objects.filter(order=current_order)
-    print(list)
     context = {
             'list': list,
             'total_price': total_price,
@@ -128,25 +126,22 @@ def payment_cash(request):
     amount_added = 0
     cash, current_order = helper.setup_handling(request)
 
-    for ordered_product in helper\
-            .parse_json_list(current_order.list):
-        product = Product.objects.get(
-            name=ordered_product.name)
+    for product in helper.product_list_from_order(current_order):
         if product.stock_applies:
             product.stock -= 1
             product.save()
 
-        cash.amount += ordered_product.price
-        amount_added += ordered_product.price
+        cash.amount += product.price
+        amount_added += product.price
         cash.save()
 
     current_order.done = True
     current_order.save()
-    current_order = Order.objects.create(user=request.user.username)
+    current_order = Order.objects.create(user=request.user)
     succesfully_payed = True
 
     total_price = current_order.total_price
-    list = helper.parse_json_list(current_order.list)
+    list = Order_Item.objects.filter(order=current_order)
     context = {
             'list': list,
             'total_price': total_price,
@@ -164,21 +159,18 @@ def payment_card(request):
     payment_error = False
     cash, current_order = helper.setup_handling(request)
 
-    for product in helper.parse_json_list(current_order.list):
-        in_database = Product\
-                              .objects\
-                              .get(name=product.name)
-        if in_database.stock_applies:
-            in_database.stock -= 1
-            in_database.save()
+    for product in helper.product_list_from_order(current_order):
+        if product.stock_applies:
+            product.stock -= 1
+            product.save()
 
         current_order.done = True
         current_order.save()
-        current_order = Order.objects.create(user=request.user.username)
+        current_order = Order.objects.create(user=request.user)
         succesfully_payed = True
 
     total_price = current_order.total_price
-    list = helper.parse_json_list(current_order.list)
+    list = Order_Item.objects.filter(order=current_order)
     context = {
             'list': list,
             'total_price': total_price,
