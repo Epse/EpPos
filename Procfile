@@ -1,1 +1,1 @@
-web: gunicorn EpPos.wsgi --log-file -
+web: gunicorn EpPos2.wsgi --log-file -
