@@ -34,7 +34,7 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10,
                                       decimal_places=2,
                                       default=0)
@@ -49,7 +49,7 @@ class Cash(models.Model):
 
 
 class Order_Item(models.Model):
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product,on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     name = models.CharField(max_length=100)
