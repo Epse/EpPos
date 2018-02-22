@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
 import re
+from django.contrib.auth.models import User
 
 
 def validate_product_name(prodname):
@@ -34,7 +35,7 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10,
                                       decimal_places=2,
                                       default=0)
