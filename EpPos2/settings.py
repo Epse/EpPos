@@ -12,6 +12,7 @@ settings_local.py which is imported from here.
 """
 
 import os
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -74,13 +75,8 @@ WSGI_APPLICATION = 'EpPos2.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+DATABASES['default'] = dj_database_url.config(default=postgres://owsbpyolejcqwl:b524155c730f3bacbfab4776f73174201c687da64f5a9bd02531c6896d48d0ff@ec2-54-227-251-233.compute-1.amazonaws.com:5432/d6eb40oil0f7pb
+)
 
 
 # Password validation
