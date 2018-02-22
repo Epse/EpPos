@@ -75,8 +75,8 @@ WSGI_APPLICATION = 'EpPos2.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-DATABASES['default'] = dj_database_url.config(default=postgres://owsbpyolejcqwl:b524155c730f3bacbfab4776f73174201c687da64f5a9bd02531c6896d48d0ff@ec2-54-227-251-233.compute-1.amazonaws.com:5432/d6eb40oil0f7pb)
-
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
