@@ -83,3 +83,4 @@ wcwidth==0.1.7
 webencodings==0.5.1
 Werkzeug==0.14.1
 widgetsnbextension==2.0.0
+gunicorn
