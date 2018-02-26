@@ -1,12 +1,17 @@
 from django.contrib.auth.models import User
-from .models import Order, Cash, Order_Item
+from .models import Order, Cash, Order_Item, Setting
 
 
 def setup_handling(request):
     cash, _ = Cash.objects.get_or_create(id=0)
     current_order = get_current_user_order(request.user.username)
+    currency, _ = Setting.objects.get_or_create(key="currency")
 
-    return (cash, current_order)
+    if not currency.value:
+        currency.value = "€"
+        currency.save()
+
+    return (cash, current_order, currency.value)
 
 
 def get_current_user_order(username):

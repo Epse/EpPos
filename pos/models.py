@@ -30,7 +30,7 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.full_clean()
-        super(Product, self).save(*args, **kwargs)
+        return super(Product, self).save(*args, **kwargs)
 
 
 class Order(models.Model):
@@ -56,3 +56,16 @@ class Order_Item(models.Model):
     price = models.DecimalField(max_digits=7, decimal_places=2)
     name = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now=True)
+
+
+class Setting(models.Model):
+    key = models.CharField(max_length=50)
+    value = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.key
+
+    def __bool__(self):
+        return bool(self.value)
+
+    __nonzero__ = __bool__

@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-from .models import Product, Order, Cash, Order_Item
+from .models import Product, Order, Cash, Order_Item, Setting
 from . import helper
 
 
@@ -45,32 +45,40 @@ def login(request):
 @login_required
 def order(request):
     list = Product.objects.all
+    currency, _ = Setting.objects.get_or_create(key="currency")
+
+    if not currency.value:
+        currency.value = "€"
+        currency.save()
+
     context = {
-            'list': list,
+        'list': list,
+        'currency': currency.value,
     }
     return render(request, 'pos/order.html', context=context)
 
 
 @login_required
 def addition(request):
-    cash, current_order = helper.setup_handling(request)
+    cash, current_order, currency = helper.setup_handling(request)
 
     total_price = current_order.total_price
     list = Order_Item.objects.filter(order=current_order)
     context = {
-            'list': list,
-            'total_price': total_price,
-            'cash': cash,
-            'succesfully_payed': False,
-            'payment_error': False,
-            'amount_added': 0,
+        'list': list,
+        'total_price': total_price,
+        'cash': cash,
+        'succesfully_payed': False,
+        'payment_error': False,
+        'amount_added': 0,
+        'currency': currency,
     }
     return render(request, 'pos/addition.html', context=context)
 
 
 @login_required
 def order_add_product(request, product_id):
-    cash, current_order = helper.setup_handling(request)
+    cash, current_order, _ = helper.setup_handling(request)
 
     to_add = get_object_or_404(Product, id=product_id)
     Order_Item.objects.create(order=current_order, product=to_add,
@@ -87,7 +95,7 @@ def order_add_product(request, product_id):
 
 @login_required
 def order_remove_product(request, product_id):
-    cash, current_order = helper.setup_handling(request)
+    cash, current_order, _ = helper.setup_handling(request)
     order_product = get_object_or_404(Order_Item, id=product_id)
 
     current_order.total_price = (
@@ -124,7 +132,7 @@ def payment_cash(request):
     succesfully_payed = False
     payment_error = False
     amount_added = 0
-    cash, current_order = helper.setup_handling(request)
+    cash, current_order, currency = helper.setup_handling(request)
 
     for product in helper.product_list_from_order(current_order):
         if product.stock_applies:
@@ -143,12 +151,13 @@ def payment_cash(request):
     total_price = current_order.total_price
     list = Order_Item.objects.filter(order=current_order)
     context = {
-            'list': list,
-            'total_price': total_price,
-            'cash': cash,
-            'succesfully_payed': succesfully_payed,
-            'payment_error': payment_error,
-            'amount_added': amount_added,
+        'list': list,
+        'total_price': total_price,
+        'cash': cash,
+        'succesfully_payed': succesfully_payed,
+        'payment_error': payment_error,
+        'amount_added': amount_added,
+        'currency': currency,
     }
     return render(request, 'pos/addition.html', context=context)
 
@@ -157,7 +166,7 @@ def payment_cash(request):
 def payment_card(request):
     succesfully_payed = False
     payment_error = False
-    cash, current_order = helper.setup_handling(request)
+    cash, current_order, currency = helper.setup_handling(request)
 
     for product in helper.product_list_from_order(current_order):
         if product.stock_applies:
@@ -172,12 +181,13 @@ def payment_card(request):
     total_price = current_order.total_price
     list = Order_Item.objects.filter(order=current_order)
     context = {
-            'list': list,
-            'total_price': total_price,
-            'cash': cash,
-            'succesfully_payed': succesfully_payed,
-            'payment_error': payment_error,
-            'amount_added': 0,
+        'list': list,
+        'total_price': total_price,
+        'cash': cash,
+        'succesfully_payed': succesfully_payed,
+        'payment_error': payment_error,
+        'amount_added': 0,
+        'currency': currency,
     }
     return render(request, 'pos/addition.html', context=context)
 

@@ -1,13 +1,13 @@
 {% if succesfully_payed %}
     <div class="alert alert-success alert-dismissable" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        Paid &euro;{{ amount_added }} Cash register now contains: &euro;{{ cash.amount }}
+        Paid {{ currency }}{{ amount_added }} Cash register now contains: {{ currency }}{{ cash.amount }}
     </div>
 {% endif %}
 {% if payment_error %}
     <div class="alert alert-danger alert-dismissable" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        Payment failed. Cash register now contains: &euro;{{ cash.amount }}
+        Payment failed. Cash register now contains: {{ currency }}{{ cash.amount }}
     </div>
 {% endif %}
     <table class="table">
@@ -23,7 +23,7 @@
             {% for product in list %}
             <tr>
                 <td>{{ product.name }}</td>
-                <td>&euro;{{ product.price }}</td>
+                <td>{{ currency }}{{ product.price }}</td>
                 <td>
                     <a role="button" class="btn btn-danger"
 		                 href="javascript:void(0);" onclick='removeProduct("{{ product.id }}");'>X</a>
@@ -33,7 +33,7 @@
             {% endif %}
             <tr>
                 <td>Total</td>
-                <td>&euro;{{ total_price }}</td>
+                <td>{{ currency }}{{ total_price }}</td>
                 <td></td>
             </tr>
         </tbody>

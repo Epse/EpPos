@@ -74,7 +74,7 @@
         </nav>
         <div id="cashresetdiv" class="alert alert-success alert-dismissable" style="display:none;" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            Successfully reset the cash amount to &euro;<span id="cashresetamount"></span>.
+            Successfully reset the cash amount to {{ currency }}<span id="cashresetamount"></span>.
         </div>
 	      <div class="container-fluid">
 	          <div class="row">
@@ -86,7 +86,7 @@
                             <a role="button" class="btn btn-primary btn-block"
 					                     href="#"
 							                 onclick="addProduct({{ product.id }});">
-				                        {{ product.name }}<br>&euro;{{ product.price }}
+				                        {{ product.name }}<br>{{ currency }}{{ product.price }}
                             </a>
                         </div>
 			                  {% endfor %}
