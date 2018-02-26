@@ -10,6 +10,7 @@ admin.site.register(Order)
 admin.site.site_header = "EpPos Administration"
 admin.site.site_title = "EpPos Administration"
 
+
 # Admin Models
 @admin.register(Setting)
 class SettingAdmin(admin.ModelAdmin):
