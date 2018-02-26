@@ -13,14 +13,8 @@ from . import helper
 
 def login(request):
     if request.method == "GET":
-        if 'next' in request.GET:
-            next = request.GET['next']
-        else:
-            next = 'pos/'
-
         context = {
             'error': False,
-            'next': next
         }
         return render(request, 'registration/login.html', context=context)
 
@@ -30,16 +24,11 @@ def login(request):
 
     if user is not None:
         auth_login(request, user)
-        if 'next' in request.GET:
-            next = request.GET['next']
-        else:
-            next = '/pos/'
-        return redirect(next)
+        return redirect(request.GET['next'] \
+                        if request.GET['next'] else 'order')
     else:
-        context = {
-            'error': True
-        }
-        return render(request, 'registration/login.html', context=context)
+        return render(request, 'registration/login.html',
+                      context={'error': True})
 
 
 @login_required
