@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from decimal import Decimal
 from . import helper
 from .models import Order, Product, Cash, validate_product_name
