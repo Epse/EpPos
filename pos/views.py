@@ -84,6 +84,7 @@ def _show_order(request, order_id, should_print):
 def view_order(request, order_id):
     return _show_order(request, order_id, False)
 
+
 @login_required
 def print_order(request, order_id):
     return _show_order(request, order_id, True)
