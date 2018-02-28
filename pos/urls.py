@@ -20,5 +20,6 @@ urlpatterns = [
     url(r'^print-order/(?P<order_id>[0-9]+)/?$', views.print_order,
         name='print_order'),
     url(r'^print-current-order/?$', views.print_current_order,
-        name='print_current_order')
+        name='print_current_order'),
+    url(r'^stock/?$', views.view_stock, name='view_stock')
 ]

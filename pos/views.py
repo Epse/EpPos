@@ -229,3 +229,16 @@ def cash(request, amount):
         return HttpResponse('')
     else:
         return HttpResponseForbidden('403 Forbidden')
+
+
+@login_required
+def view_stock(request):
+    stock_products = Product.objects.filter(stock_applies=True)
+    company = helper.get_company()
+
+    context = {
+        'list': stock_products,
+        'company': company
+    }
+
+    return render(request, 'pos/stock.html', context=context)
