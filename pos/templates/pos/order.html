@@ -126,6 +126,7 @@
 	       }
 
 	       function removeProduct(product) {
+             console.log("remove " + product);
 		         $('#additiondiv').load("{%url 'order_remove_product' '' %}" + encodeURIComponent(product));
 	       }
 
