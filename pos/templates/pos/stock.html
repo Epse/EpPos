@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	      <meta charset=utf-8 />
+	      <title>Order id {{ order.id }} from {{ order.last_change }}</title>
+
+        {% load static %}
+        <script src="{% static 'pos/js/jquery-3.2.1.min.js' %}">
+        </script>
+
+        <link rel="stylesheet" href="{% static 'pos/css/bootstrap.min.css' %}">
+
+        <script src="{% static 'pos/js/bootstrap.bundle.min.js' %}">
+        </script>
+
+        <link rel="apple-touch-icon" sizes="57x57" href="{% static 'pos/img/apple-touch-icon-57x57.png' %}">
+        <link rel="apple-touch-icon" sizes="60x60" href="{% static 'pos/img/apple-touch-icon-60x60.png' %}">
+        <link rel="apple-touch-icon" sizes="72x72" href="{% static 'pos/img/apple-touch-icon-72x72.png' %}">
+        <link rel="apple-touch-icon" sizes="76x76" href="{% static 'pos/img/apple-touch-icon-76x76.png' %}">
+        <link rel="apple-touch-icon" sizes="114x114" href="{% static 'pos/img/apple-touch-icon-114x114.png' %}">
+        <link rel="apple-touch-icon" sizes="120x120" href="{% static 'pos/img/apple-touch-icon-120x120.png' %}">
+        <link rel="apple-touch-icon" sizes="144x144" href="{% static 'pos/img/apple-touch-icon-144x144.png' %}">
+        <link rel="apple-touch-icon" sizes="152x152" href="{% static 'pos/img/apple-touch-icon-152x152.png' %}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'pos/img/apple-touch-icon-180x180.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static "pos/img/favicon-32x32.png" %}" >
+        <link rel="icon" type="image/png" sizes="192x192" href="{% static "pos/img/android-chrome-192x192.png" %}" >
+        <link rel="icon" type="image/png" sizes="96x96" href="{% static "pos/img/favicon-96x96.png" %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static "pos/img/favicon-16x16.png" %}">
+        <link rel="manifest" href="{% static "pos/manifest.json" %}">
+        <link rel="mask-icon" href="{% static "pos/img/safari-pinned-tab.svg" color="#5bbad5" %}">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="msapplication-TileImage" content="{% static "pos/img/mstile-144x144.png" %}">
+        <meta name="theme-color" content="#ffffff">
+
+        <style type="text/css">
+            @media print {
+                .no-print {
+                    display:none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-12">
+                    <h1>{{ company }}</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <p>
+                        <button type="button" class="btn btn-primary no-print" onclick="window.print();">Print</button>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if list %}
+                            {% for product in list %}
+                            <tr>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.stock }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -10,6 +10,12 @@
         Payment failed. Cash register now contains: {{ currency }}{{ cash.amount }}
     </div>
 {% endif %}
+{% if stock_error %}
+    <div class="alert alert-danger alert-dismissable" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        Not enough in stock of requested product.
+    </div>
+{% endif %}
     <table class="table">
         <thead>
             <tr>
@@ -32,7 +38,7 @@
             {% endfor %}
             {% endif %}
             <tr>
-                <td>Total</td>
+                <th scope="row">Total</th>
                 <td>{{ currency }}{{ total_price }}</td>
                 <td></td>
             </tr>

@@ -62,6 +62,9 @@
                                 Reset Cash
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{% url 'view_stock' %}" class="nav-link active" title="View Stock" style="cursor:pointer;">View Stock</a>
+                        </li>
                         {% endif %}
                         <li class="nav-item">
                             <a class="nav-link active" href="{% url 'admin:index' %}">Admin</a>
@@ -123,6 +126,7 @@
 	       }
 
 	       function removeProduct(product) {
+             console.log("remove " + product);
 		         $('#additiondiv').load("{%url 'order_remove_product' '' %}" + encodeURIComponent(product));
 	       }
 

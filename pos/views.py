@@ -45,6 +45,24 @@ def order(request):
     return render(request, 'pos/order.html', context=context)
 
 
+def _addition_no_stock(request):
+    cash, current_order, currency = helper.setup_handling(request)
+
+    total_price = current_order.total_price
+    list = Order_Item.objects.filter(order=current_order)
+    context = {
+        'list': list,
+        'total_price': total_price,
+        'cash': cash,
+        'succesfully_payed': False,
+        'payment_error': False,
+        'amount_added': 0,
+        'currency': currency,
+        'stock_error': True,
+    }
+    return render(request, 'pos/addition.html', context=context)
+
+
 @login_required
 def addition(request):
     cash, current_order, currency = helper.setup_handling(request)
@@ -59,6 +77,7 @@ def addition(request):
         'payment_error': False,
         'amount_added': 0,
         'currency': currency,
+        'stock-error': False,
     }
     return render(request, 'pos/addition.html', context=context)
 
@@ -108,6 +127,15 @@ def order_add_product(request, product_id):
     cash, current_order, _ = helper.setup_handling(request)
 
     to_add = get_object_or_404(Product, id=product_id)
+
+    # Make sure we can't go under 0 stock
+    if to_add.stock_applies:
+        if to_add.stock < 1:
+            return _addition_no_stock(request)
+        else:
+            to_add.stock -= 1
+            to_add.save()
+
     Order_Item.objects.create(order=current_order, product=to_add,
                               price=to_add.price, name=to_add.name)
     current_order.total_price = (
@@ -123,11 +151,16 @@ def order_add_product(request, product_id):
 @login_required
 def order_remove_product(request, product_id):
     cash, current_order, _ = helper.setup_handling(request)
-    order_product = get_object_or_404(Order_Item, id=product_id)
+    order_item = get_object_or_404(Order_Item, id=product_id)
+    order_product = order_item.product
+
+    if order_product.stock_applies:
+        order_product.stock += 1
+        order_product.save()
 
     current_order.total_price = (
         current_order.total_price -
-        order_product.price).quantize(
+        order_item.price).quantize(
             decimal.Decimal('0.01'))
 
     if current_order.total_price < 0:
@@ -137,7 +170,7 @@ def order_remove_product(request, product_id):
         current_order.total_price = 0
 
     current_order.save()
-    order_product.delete()
+    order_item.delete()
 
     # I only need default values.
     return addition(request)
@@ -162,10 +195,6 @@ def payment_cash(request):
     cash, current_order, currency = helper.setup_handling(request)
 
     for product in helper.product_list_from_order(current_order):
-        if product.stock_applies:
-            product.stock -= 1
-            product.save()
-
         cash.amount += product.price
         amount_added += product.price
         cash.save()
@@ -196,10 +225,6 @@ def payment_card(request):
     cash, current_order, currency = helper.setup_handling(request)
 
     for product in helper.product_list_from_order(current_order):
-        if product.stock_applies:
-            product.stock -= 1
-            product.save()
-
         current_order.done = True
         current_order.save()
         current_order = Order.objects.create(user=request.user)
@@ -229,3 +254,16 @@ def cash(request, amount):
         return HttpResponse('')
     else:
         return HttpResponseForbidden('403 Forbidden')
+
+
+@login_required
+def view_stock(request):
+    stock_products = Product.objects.filter(stock_applies=True)
+    company = helper.get_company()
+
+    context = {
+        'list': stock_products,
+        'company': company
+    }
+
+    return render(request, 'pos/stock.html', context=context)
