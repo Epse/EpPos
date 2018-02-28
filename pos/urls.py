@@ -14,5 +14,11 @@ urlpatterns = [
     url(r'^order/?$', views.order, name='order'),
     url(r'^pay/card/$', views.payment_card, name='payment_card'),
     url(r'^pay/cash/$', views.payment_cash, name='payment_cash'),
-    url(r'^cash/(?P<amount>[0-9\.]*)/?$', views.cash, name='cash')
+    url(r'^cash/(?P<amount>[0-9\.]*)/?$', views.cash, name='cash'),
+    url(r'^view-order/(?P<order_id>[0-9]+)/?$', views.view_order,
+        name='view_order'),
+    url(r'^print-order/(?P<order_id>[0-9]+)/?$', views.print_order,
+        name='print_order'),
+    url(r'^print-current-order/?$', views.print_current_order,
+        name='print_current_order')
 ]

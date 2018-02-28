@@ -111,6 +111,9 @@
 	       }
 
 	       function payed(method) {
+             if (confirm("Do you want to print the addition?")) {
+                 window.open("{% url 'print_current_order' %}", "_blank").focus();
+             }
              if (method == "cash") {
 		             $('#additiondiv').load("{% url 'payment_cash' %}");
              } else if (method == "card") {
