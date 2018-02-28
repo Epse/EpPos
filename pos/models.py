@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 from django.conf import settings
 import re
 
@@ -41,6 +42,9 @@ class Order(models.Model):
                                       default=0)
     done = models.BooleanField(default=False)
     last_change = models.DateTimeField(auto_now=True)
+
+    def get_absolute_url(self):
+        return reverse('view_order', args=[self.id])
 
 
 class Cash(models.Model):

@@ -2,22 +2,38 @@ from django.contrib.auth.models import User
 from .models import Order, Cash, Order_Item, Setting
 
 
-def setup_handling(request):
-    cash, _ = Cash.objects.get_or_create(id=0)
-    current_order = get_current_user_order(request.user.username)
-    currency, _ = Setting.objects.get_or_create(key="currency")
+def get_currency():
+    currency, is_created = Setting.objects.get_or_create(key="currency")
 
-    if not currency.value:
+    if is_created:
         currency.value = "€"
         currency.save()
 
-    return (cash, current_order, currency.value)
+    return currency.value
+
+
+def get_company():
+    company, is_created = Setting.objects.get_or_create(key="company")
+
+    if is_created:
+        company.value = "EpPos"
+        company.save()
+
+    return company.value
+
+
+def setup_handling(request):
+    cash, _ = Cash.objects.get_or_create(id=0)
+    current_order = get_current_user_order(request.user.username)
+    currency = get_currency()
+
+    return (cash, current_order, currency)
 
 
 def get_current_user_order(username):
     usr = User.objects.get_by_natural_key(username)
     q = Order.objects.filter(user=usr, done=False)\
-                     .order_by('last_change')
+                     .order_by('-last_change')
     if q.count() >= 1:
         return q[0]
     else:

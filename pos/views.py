@@ -2,12 +2,14 @@ import logging
 import decimal
 from django.shortcuts import render, get_object_or_404
 from django.http import (HttpResponse,
-                         HttpResponseForbidden)
+                         HttpResponseForbidden,
+                         HttpResponseBadRequest)
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-from .models import Product, Order, Cash, Order_Item, Setting
+from .models import Product, Order, Cash, Order_Item
 from . import helper
 
 
@@ -24,7 +26,7 @@ def login(request):
 
     if user is not None:
         auth_login(request, user)
-        return redirect(request.GET['next'] \
+        return redirect(request.GET['next']
                         if request.GET['next'] else 'order')
     else:
         return render(request, 'registration/login.html',
@@ -34,15 +36,11 @@ def login(request):
 @login_required
 def order(request):
     list = Product.objects.all
-    currency, _ = Setting.objects.get_or_create(key="currency")
-
-    if not currency.value:
-        currency.value = "€"
-        currency.save()
+    currency = helper.get_currency()
 
     context = {
         'list': list,
-        'currency': currency.value,
+        'currency': currency,
     }
     return render(request, 'pos/order.html', context=context)
 
@@ -63,6 +61,45 @@ def addition(request):
         'currency': currency,
     }
     return render(request, 'pos/addition.html', context=context)
+
+
+def _show_order(request, order_id, should_print):
+    currency = helper.get_currency()
+    order = get_object_or_404(Order, id=order_id)
+    items = Order_Item.objects.filter(order=order)
+    company = helper.get_company()
+
+    context = {
+        'list': items,
+        'order': order,
+        'currency': currency,
+        'company': company,
+        'print': should_print
+    }
+
+    return render(request, 'pos/view_order.html', context=context)
+
+
+@login_required
+def view_order(request, order_id):
+    return _show_order(request, order_id, False)
+
+@login_required
+def print_order(request, order_id):
+    return _show_order(request, order_id, True)
+
+
+@login_required
+def print_current_order(request):
+    # Get the user. This is quite a roundabout, sorry
+    usr = User.objects.get_by_natural_key(request.user.username)
+    q = Order.objects.filter(user=usr)\
+                     .order_by('-last_change')
+
+    # This is an edge case that would pretty much never occur
+    if q.count() < 1:
+        return HttpResponseBadRequest
+    return _show_order(request, q[0].id, True)
 
 
 @login_required
