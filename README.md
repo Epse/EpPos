@@ -4,7 +4,7 @@ EpPos is a basic Django (python)-based Point Of Sale
 system that is designed to be platform-independent (it runs on the web) and completely mobile- and
 touch-friendly. 
 
-**Contributors: see the CONTRIB.md file!**
+**Contributors: see the [CONTRIBUTING](CONTRIBUTING.md) file!**
 
 ## Hold on Epse, what on earth is that POS shenanigans about?
 Well, glad you asked. A POS system is a program that is used by salespeople or, more in the scope of
@@ -32,7 +32,7 @@ You found a bug! Congratulations! You can report this issue on or issue tracker 
 forever grateful if you could possible be so kind as to include a server log and/or web console log.
 
 ## But I can fix that myself!
-Absolutely marvellous! Have a look in the CONTRIB.md file for info about contributing!
+Absolutely marvellous! Have a look in the [CONTRIBUTING](CONTRIBUTING.md) file for info about contributing!
 
 ## I want to make a spinoff!
 You absolutely may. If you think what you want in a POS is not something that is in the scope of
