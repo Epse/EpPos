@@ -179,7 +179,7 @@ def order_remove_product(request, product_id):
 @login_required
 def reset_order(request):
     cash, current_order, _ = helper.setup_handling(request)
-    
+
     Order_Item.objects.filter(order=current_order).delete()
     current_order.list = "[]"
     current_order.total_price = 0
