@@ -60,7 +60,7 @@ def _addition_no_stock(request):
         'currency': currency,
         'stock_error': True,
     }
-    return render(request, 'pos/addition.html', context=context)
+    return render(request, 'pos/addition.html', context=context, status=400)
 
 
 @login_required
@@ -180,8 +180,12 @@ def order_remove_product(request, product_id):
 def reset_order(request):
     cash, current_order, _ = helper.setup_handling(request)
 
-    Order_Item.objects.filter(order=current_order).delete()
-    current_order.list = "[]"
+    for item in Order_Item.objects.filter(order=current_order):
+        if item.product.stock_applies:
+            item.product.stock += 1
+            item.product.save()
+        item.delete()
+
     current_order.total_price = 0
     current_order.save()
 
