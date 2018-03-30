@@ -1,10 +1,11 @@
+import random
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 from decimal import Decimal
 from . import helper
-from .models import Order, Product, Cash, validate_product_name
+from .models import Order, Product, Cash, validate_product_name, Order_Item
 
 
 def _helper():
@@ -188,6 +189,14 @@ class OrderManagementTestCase(TestCase):
         response = self.client.get(reverse('order_add_product', args=['100']))
         self.assertEqual(response.status_code, 404)
 
+    def test_order_reset(self):
+        response = self.client.get(reverse('reset_order'))
+        self.assertEqual(response.status_code, 200)
+
+        order = helper.get_current_user_order(self.user.username)
+        order_items = Order_Item.objects.filter(order=order)
+        self.assertCountEqual(order_items, [])
+
 
 class HelperTestCase(TestCase):
     list = []
@@ -200,3 +209,82 @@ class HelperTestCase(TestCase):
         order = helper.get_current_user_order(self.user.username)
         self.assertEqual(self.product_list,
                          helper.product_list_from_order(order))
+
+
+class StockTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            'tester', 'test@example.com', 'pswd')
+        self.client.login(username='tester', password='pswd')
+        Product.objects.create(
+            stock_applies=True,
+            name="stocked",
+            price=Decimal(5),
+            stock=3)
+        Product.objects.create(
+            stock_applies=True,
+            name="outofstock",
+            price=Decimal(20),
+            stock=0)
+        Product.objects.create(
+            stock_applies=False,
+            name="nostock",
+            price=Decimal(20))
+
+    def test_order(self):
+        # Any open orders can go.
+        Order.objects.filter(user=self.user).delete()
+
+        Order.objects.create(user=self.user,
+                             total_price=0,
+                             done=False)
+
+        response = self.client.get(
+            reverse("order_add_product",
+                    args=[Product.objects.get(name="stocked").id]))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(
+            reverse("order_add_product",
+                    args=[Product.objects.get(name="outofstock").id]))
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.get(
+            reverse("order_add_product",
+                    args=[Product.objects.get(name="nostock").id]))
+        self.assertEqual(response.status_code, 200)
+
+        # One item should have been reserved
+        self.assertEqual(Product.objects.get(name="stocked").stock, 2)
+
+        response = self.client.get(reverse("payment_card"))
+        self.assertEqual(response.status_code, 200)
+
+        # One item should have been sold
+        self.assertEqual(Product.objects.get(name="stocked").stock, 2)
+
+    def test_cancelled_order(self):
+        # Any open orders can go.
+        Order.objects.filter(user=self.user).delete()
+
+        Order.objects.create(user=self.user,
+                             total_price=0,
+                             done=False)
+
+        stocked = Product.objects.get(name="stocked").stock
+
+        response = self.client.get(
+            reverse("order_add_product",
+                    args=[Product.objects.get(name="stocked").id]))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(
+            reverse("order_add_product",
+                    args=[Product.objects.get(name="outofstock").id]))
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(Product.objects.get(name="outofstock").stock, 0)
+
+        response = self.client.get(reverse("reset_order"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Product.objects.get(name="stocked").stock, stocked)
+        self.assertEqual(Product.objects.get(name="outofstock").stock, 0)
