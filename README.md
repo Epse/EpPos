@@ -44,3 +44,4 @@ Epse aka. Stef Pletinck
 
 ## Hall of fame
 * [Sebastien Spaeth](https://github.com/spaetz)
+* @manuelfedele
