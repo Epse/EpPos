@@ -6,7 +6,7 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(pattern_name='order')),
     url(r'^addition/?$',
         views.addition, name='addition'),
-    url(r'^order/add/(?P<product_id>[0-9]*/?$)',
+    url(r'^order/add/(?P<product_id>[0-9A-Za-z_-]*/?$)',
         views.order_add_product, name='order_add_product'),
     url(r'^order/remove/(?P<product_id>[0-9]*)/?$',
         views.order_remove_product, name="order_remove_product"),
