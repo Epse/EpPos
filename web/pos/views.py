@@ -1,5 +1,6 @@
 import logging
 import decimal
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, get_object_or_404
 from django.http import (HttpResponse,
                          HttpResponseForbidden,
@@ -124,17 +125,25 @@ def print_current_order(request):
 
 @login_required
 def order_add_product(request, product_id):
-    cash, current_order, _ = helper.setup_handling(request)
+    _, current_order, _ = helper.setup_handling(request)
 
-    to_add = get_object_or_404(Product, id=product_id)
+    if product_id.isdigit():
+        try:
+            to_add = Product.objects.get(id=product_id)
+        except ObjectDoesNotExist:
+            to_add = get_object_or_404(Product, code=product_id)
+
+    else:
+        to_add = get_object_or_404(Product, code=product_id)
+
 
     # Make sure we can't go under 0 stock
     if to_add.stock_applies:
         if to_add.stock < 1:
             return _addition_no_stock(request)
-        else:
-            to_add.stock -= 1
-            to_add.save()
+
+        to_add.stock -= 1
+        to_add.save()
 
     Order_Item.objects.create(order=current_order, product=to_add,
                               price=to_add.price, name=to_add.name)

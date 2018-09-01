@@ -42,6 +42,9 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
+                            <a class="nav-link active" href="#" data-toggle="modal" data-target="#CodeModal">Enter Code</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link active" href="#" onclick="reset();">Clear Order</a>
                         </li>
                         <li class="nav-item dropdown">
@@ -102,11 +105,38 @@
 		            </div>
 	          </div>
 	      </div>
+        <div class="modal" id="CodeModal" tabindex="-1" role="dialog" aria-labelledby="codeModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <form action="javascript:void(0);">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Enter by Code</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input id="codeInput" class="form-control" name="code" type="text" value="" autofocus="autofocus" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" onclick="scancode();">Add</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+        </div>
 	      <script>
 	       function addProduct(productID) {
 		         $('#additiondiv').load("{% url 'order_add_product' '' %}" + productID);
 		         console.log("Ordered number: " + productID);
 	       }
+
+         function scancode() {
+             addProduct(document.getElementById('codeInput').value);
+             document.getElementById('codeInput').value = "";
+             document.getElementById('codeInput').focus();
+         }
 
 	       function reset() {
 		         $('#additiondiv').load("{% url 'reset_order' %}");
@@ -149,6 +179,10 @@
              $('#resetcashpopover').popover({html:true});
 		         $('#additiondiv').load("{% url 'addition' %}");
 	       });
+
+         $('#CodeModal').on('shown.bs.modal', function (e) {
+             $('#codeInput').focus();
+         })
 	      </script>
     </body>
 </html>

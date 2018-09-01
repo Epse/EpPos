@@ -21,13 +21,15 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=7, decimal_places=2)
     stock_applies = models.BooleanField()
     stock = models.PositiveSmallIntegerField(default=0)
-    code = models.CharField(max_length=50, unique=True)
+    code = models.CharField(max_length=50, unique=True, null=True, blank=True)
 
     def __str__(self):
         return self.name
 
     def clean(self):
         validate_product_name(self.name)
+        if self.code == "":
+            self.code = None
 
     def save(self, *args, **kwargs):
         if not self.pk:
