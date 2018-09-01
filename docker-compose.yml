@@ -1,0 +1,26 @@
+web:
+  restart: always
+  build: ./web
+  expose:
+    - "8000"
+  ports:
+    - "8000:8000"
+  volumes:
+    - /usr/src/app
+    - /usr/src/app/static
+  environment:
+    DEBUG: 'true'
+  command: gunicorn EpPos2.wsgi:application -w 2 -b :8000
+
+nginx:
+  restart: always
+  build: ./docker/nginx/
+  ports:
+    - "8001:80"
+  volumes:
+    - /www/static
+  volumes_from:
+    - web
+  links:
+    - web:web
+
