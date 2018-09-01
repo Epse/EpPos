@@ -1,8 +1,8 @@
+import re
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.conf import settings
-import re
 
 
 def validate_product_name(prodname):
@@ -21,6 +21,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=7, decimal_places=2)
     stock_applies = models.BooleanField()
     stock = models.PositiveSmallIntegerField(default=0)
+    code = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
