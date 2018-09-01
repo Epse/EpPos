@@ -7,6 +7,6 @@ before_install:
   - export PIP_USE_MIRRORS=true
 
 install:
-  pip install django
+  pip install -r web/requirements.txt
 
-script: python manage.py test
+script: python web/manage.py test
