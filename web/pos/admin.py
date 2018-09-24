@@ -76,3 +76,4 @@ class OrderAdmin(admin.ModelAdmin):
 
     # Order by not Done
     ordering = ('done', )
+    
