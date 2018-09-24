@@ -28,7 +28,6 @@ class SettingAdmin(admin.ModelAdmin):
     )
 
 
-
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     """
@@ -44,7 +43,7 @@ class ProductAdmin(admin.ModelAdmin):
         'stock_applies'
     )
 
-    list_display_links =(
+    list_display_links = (
         'code',
         'name',
     )
@@ -77,16 +76,3 @@ class OrderAdmin(admin.ModelAdmin):
 
     # Order by not Done
     ordering = ('done', )
-
-
-
-
-
-
-
-
-
-
-
-
-
