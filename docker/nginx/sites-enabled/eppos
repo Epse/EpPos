@@ -18,6 +18,6 @@ server {
     }
 
     location /static/ {
-        root /usr/src/app;
+        root /www;
     }
 }
