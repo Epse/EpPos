@@ -22,6 +22,20 @@ def get_company():
     return company.value
 
 
+def get_can_negative_stock():
+    setting, is_created = Setting.objects.get_or_create(key="negative_stock")
+
+    if is_created:
+        setting.value = "off"
+        setting.save()
+        return False
+
+    print(setting.value)
+    if setting.value == "off" or setting.value == "no":
+        return False
+    return True
+
+
 def setup_handling(request):
     cash, _ = Cash.objects.get_or_create(id=0)
     current_order = get_current_user_order(request.user.username)
