@@ -61,7 +61,7 @@ def _addition_no_stock(request):
         'currency': currency,
         'stock_error': True,
     }
-    return render(request, 'pos/addition.html', context=context, status=400)
+    return render(request, 'pos/addition.html', context=context)
 
 
 @login_required
