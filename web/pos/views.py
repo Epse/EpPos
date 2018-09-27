@@ -61,7 +61,7 @@ def _addition_no_stock(request):
         'currency': currency,
         'stock_error': True,
     }
-    return render(request, 'pos/addition.html', context=context, status=400)
+    return render(request, 'pos/addition.html', context=context)
 
 
 @login_required
@@ -139,7 +139,7 @@ def order_add_product(request, product_id):
 
     # Make sure we can't go under 0 stock
     if to_add.stock_applies:
-        if to_add.stock < 1:
+        if to_add.stock < 1 and not helper.get_can_negative_stock():
             return _addition_no_stock(request)
 
         to_add.stock -= 1

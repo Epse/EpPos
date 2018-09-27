@@ -1,26 +1,39 @@
-web:
-  restart: always
-  build: ./web
-  expose:
-    - "8000"
-  ports:
-    - "8000:8000"
-  volumes:
-    - /usr/src/app
-    - /usr/src/app/static
-  environment:
-    DEBUG: 'true'
-  command: gunicorn EpPos2.wsgi:application -w 2 -b :8000
+version: '3'
+services:
+  web:
+    restart: always
+    build: ./web
+    expose:
+      - "8000"
+    volumes:
+      - static:/usr/src/app/static
+      - data:/usr/src/app/db
+    environment:
+      DEBUG: 'true'
+    command: gunicorn EpPos2.wsgi:application -w 2 -b :8000
+    networks:
+      - backlink
 
-nginx:
-  restart: always
-  build: ./docker/nginx/
-  ports:
-    - "8001:80"
-  volumes:
-    - /www/static
-  volumes_from:
-    - web
-  links:
-    - web:web
+  nginx:
+    restart: always
+    build: ./docker/nginx/
+    ports:
+      - "80:80"
+    volumes:
+      - static:/www/static
+    links:
+      - web:web
+    networks:
+      - backlink
+    depends_on:
+      - web
 
+volumes:
+  data:
+    driver: local
+  static:
+    driver: local
+
+networks:
+  backlink:
+    driver: bridge

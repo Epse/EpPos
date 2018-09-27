@@ -46,3 +46,4 @@ Epse aka. Stef Pletinck
 Everyone who contributes to EpPos gets a spot here.
 * [Sebastien Spaeth](https://github.com/spaetz)
 * @manuelfedele
+* [@ZeroCoolHacker](https://github.com/ZeroCoolHacker)

@@ -20,8 +20,8 @@ class Product(models.Model):
                             validators=[validate_product_name])
     price = models.DecimalField(max_digits=7, decimal_places=2)
     stock_applies = models.BooleanField()
-    stock = models.PositiveSmallIntegerField(default=0)
     minimum_stock = models.PositiveSmallIntegerField(default=0)
+    stock = models.IntegerField(default=0)
     code = models.CharField(max_length=50, unique=True, null=True, blank=True)
 
     def __str__(self):

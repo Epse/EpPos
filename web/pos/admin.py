@@ -14,11 +14,7 @@ admin.site.site_title = "EpPos Administration"
 @admin.register(Setting)
 class SettingAdmin(admin.ModelAdmin):
 
-    # You really shouldn't add random settings
-    def has_add_permission(self, request):
-        return False
-
-    # Deleting a setting seems odd...
+    # Deleting a setting is quite confusing
     def has_delete_permission(self, *args, **kwargs):
         return False
 
