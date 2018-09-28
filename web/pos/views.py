@@ -136,7 +136,6 @@ def order_add_product(request, product_id):
     else:
         to_add = get_object_or_404(Product, code=product_id)
 
-
     # Make sure we can't go under 0 stock
     if to_add.stock_applies:
         if to_add.stock < 1 and not helper.get_can_negative_stock():

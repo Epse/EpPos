@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import Product, Cash, Order, Setting
 from django.contrib.admin import SimpleListFilter
 from django.db.models import F
+
+
 # Register your models here.
 admin.site.register(Cash)
 
@@ -26,7 +28,7 @@ class SettingAdmin(admin.ModelAdmin):
 
 
 # Custom Filter for ProductAdmin
-class LowStockFilter(admin.SimpleListFilter):
+class LowStockFilter(SimpleListFilter):
 
     title = 'Stock Available'
     parameter_name = 'stock_available'
