@@ -1,5 +1,8 @@
 from django.contrib import admin
 from .models import Product, Cash, Order, Setting
+from django.contrib.admin import SimpleListFilter
+from django.db.models import F
+
 
 # Register your models here.
 admin.site.register(Cash)
@@ -24,6 +27,37 @@ class SettingAdmin(admin.ModelAdmin):
     )
 
 
+# Custom Filter for ProductAdmin
+class LowStockFilter(SimpleListFilter):
+
+    title = 'Stock Available'
+    parameter_name = 'stock_available'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        return (
+            ('low', 'Low Stock'),
+            ('high', 'High Stock')
+        )
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        if self.value() == 'low':
+            return queryset.filter(stock__lte=F('minimum_stock'))
+        if self.value() == 'high':
+            return queryset.filter(stock__gte=F('minimum_stock'))
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     """
@@ -36,6 +70,7 @@ class ProductAdmin(admin.ModelAdmin):
         'name',
         'price',
         'stock',
+        'minimum_stock',
         'stock_applies'
     )
 
@@ -48,6 +83,11 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = (
         'code',
         'name'
+    )
+
+    # List filter
+    list_filter = (
+        LowStockFilter,
     )
 
 
