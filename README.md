@@ -11,16 +11,12 @@ A POS (Point Of Service) system is the software that is used by cashiers and wai
 This one is meant for smaller businesses, like food trucks.
 
 ## How can I run it?
-It is very simple. Have a look at the wiki! Or read this block of text since the wiki isn't yet up-to-date.
+It is very simple. Have a look at the wiki! Or read this block of text for the short version.
 
-First off, install Python 3 and Django. If you are using Linux, they are probably in your repo's.
-Then [download EpPos](https://github.com/Epse/EpPos/releases) to wherever you want to keep your Django apps, edit settings.py
-and change the `DEBUG` var to `False` and add the domain name or IP-address from which the POS will
-be accessed to the `ALLOWED_HOSTS` variable. Then run `python manage.py migrate` and `python
-manage.py createsuperuser` to create a new admin account which you can use to manage the system and
-add new users.
-Then set it up like you would set up any normal Django application, we recommend using
-[uWSGI](http://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html) with nginx.
+Install docker and docker-compose, download EpPos and navigate into the directory.
+Run `docker-compose -f docker-compose-prod.yml up -d --build`.
+Wait for it to complete and run `docker-compose -f docker-compose-prod.yml run web ./manage.py createsuperuser` and follow the prompts to create an admin account.
+Go to `localhost` in your browser and log in!
 
 If you need help with this, you can send me an email.
 
