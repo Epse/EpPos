@@ -45,7 +45,7 @@
                             <a class="nav-link active" href="#" data-toggle="modal" data-target="#CodeModal">Enter Code</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="#" onclick="reset();">Clear Order</a>
+                            <a class="nav-link active" href="#" data-toggle="modal" data-target="#clearModal">Clear Order</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -124,6 +124,27 @@
                             </div>
                         </div>
                     </form>
+                </div>
+        </div>
+        <div class="modal" id="clearModal" tabindex="-1" role="dialog" aria-labelledby="clearModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+									<p>
+										Are you sure you want to clear this order?
+									</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-danger" data-dismiss="modal" onclick="reset();">Clear it</button>
+                                <button class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
                 </div>
         </div>
 	      <script>
