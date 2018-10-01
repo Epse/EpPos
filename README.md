@@ -14,8 +14,8 @@ This one is meant for smaller businesses, like food trucks.
 It is very simple. Have a look at the wiki! Or read this block of text for the short version.
 
 Install docker and docker-compose, download EpPos and navigate into the directory.
-Run `docker-compose -f docker-compose-prod.yml up -d --build`.
-Wait for it to complete and run `docker-compose -f docker-compose-prod.yml run web ./manage.py createsuperuser` and follow the prompts to create an admin account.
+Run `docker-compose up -d --build`.
+Wait for it to complete and run `docker-compose run web ./manage.py createsuperuser` and follow the prompts to create an admin account.
 Go to `localhost` in your browser and log in!
 
 If you need help with this, you can send me an email.
