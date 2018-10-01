@@ -18,12 +18,15 @@ engines:
 
 ratings:
   paths:
-    - "pos/helper.py"
-    - "pos/tests.py"
-    - "pos/views.py"
-    - "templates/"
+    - "web/pos/helper.py"
+    - "web/pos/tests.py"
+    - "web/pos/views.py"
+    - "web/pos/models.py"
+    - "web/pos/admin.py"
+    - "web/pos/templates/"
 
 
 excluded_paths:
 - "**/static/**/*"
-- "pos/migrations/**"
+- "web/pos/migrations/**"
+- "web/pos/settings.py"
