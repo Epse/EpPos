@@ -23,6 +23,8 @@ class Product(models.Model):
     ORANGE = "orange"
     PURPLE = "purple"
     BLACK = "black"
+    PINK = "pink"
+    CYAN = "cyan"
 
     # Colour choices
     COLOUR_CHOICES = (
@@ -32,6 +34,8 @@ class Product(models.Model):
             (ORANGE, "Orange"),
             (PURPLE, "Purple"),
             (BLACK, "Black"),
+            (PINK, "Pink"),
+            (CYAN, "Cyan"),
     )
 
     name = models.CharField(max_length=100,
