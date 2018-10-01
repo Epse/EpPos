@@ -31,6 +31,29 @@
         <meta name="msapplication-TileColor" content="#da532c">
         <meta name="msapplication-TileImage" content="{% static "pos/img/mstile-144x144.png" %}">
         <meta name="theme-color" content="#ffffff">
+
+		<style>
+				.green {
+						background-color: #86ff4f;
+						border-color: #86ff4f;
+				}
+				.yellow {
+						background-color: #ffff4f;
+						border-color: #ffff4f;
+				}
+				.orange {
+						background-color: #f48709;
+						border-color: #f48709;
+				}
+				.purple {
+						background-color: #dd09f4;
+						border-color: #dd09f4;
+				}
+				.black {
+						background-color: #373438;
+						border-color: #373438;
+				}
+		</style>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -89,7 +112,7 @@
 			                  {% if list %}
 			                  {% for product in list %}
 			                  <div class="col-sm-6 col-md-3" style="padding-top: 5px; padding-bottom: 5px;">
-                            <a role="button" class="btn btn-primary btn-block"
+									  <a role="button" class="btn btn-primary btn-block {{ product.colour }}"
 					                     href="#"
 							                 onclick="addProduct({{ product.id }});">
 				                        {{ product.name }}<br>{{ currency }}{{ product.price }}
