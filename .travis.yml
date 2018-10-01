@@ -1,12 +1,15 @@
 language: python
 python:
-  - "3.6.3"
-  - "3.5.4"
+  - 3.6
+  - 3.5
 
 before_install:
   - export PIP_USE_MIRRORS=true
 
 install:
-  pip install -r web/requirements.txt
+  - pip install -r web/requirements.txt
+  - pip install flake8
 
-script: python web/manage.py test
+script: 
+  - python web/manage.py test
+  - flake8
