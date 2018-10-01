@@ -66,8 +66,8 @@ class ProductAdmin(admin.ModelAdmin):
 
     # List Page Display Configuration
     list_display = (
-        'code',
         'name',
+        'code',
         'price',
         'stock',
         'minimum_stock',

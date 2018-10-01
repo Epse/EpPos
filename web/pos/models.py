@@ -16,6 +16,28 @@ def validate_product_name(prodname):
 
 
 class Product(models.Model):
+    # The different colours, to use as Product.<colour>
+    BLUE = "blue"
+    GREEN = "green"
+    YELLOW = "yellow"
+    ORANGE = "orange"
+    PURPLE = "purple"
+    BLACK = "black"
+    PINK = "pink"
+    CYAN = "cyan"
+
+    # Colour choices
+    COLOUR_CHOICES = (
+            (BLUE, "Blue"),
+            (GREEN, "Green"),
+            (YELLOW, "Yellow"),
+            (ORANGE, "Orange"),
+            (PURPLE, "Purple"),
+            (BLACK, "Black"),
+            (PINK, "Pink"),
+            (CYAN, "Cyan"),
+    )
+
     name = models.CharField(max_length=100,
                             validators=[validate_product_name])
     price = models.DecimalField(max_digits=7, decimal_places=2)
@@ -23,6 +45,8 @@ class Product(models.Model):
     minimum_stock = models.PositiveSmallIntegerField(default=0)
     stock = models.IntegerField(default=0)
     code = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    colour = models.CharField(max_length=10,
+                              choices=COLOUR_CHOICES, default="blue")
 
     def __str__(self):
         return self.name

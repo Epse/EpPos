@@ -36,7 +36,8 @@ def login(request):
 
 @login_required
 def order(request):
-    list = Product.objects.all
+    # Sort products by colour, then by name
+    list = Product.objects.order_by('colour', 'name')
     currency = helper.get_currency()
 
     context = {
