@@ -4,8 +4,10 @@ from django.contrib.admin import SimpleListFilter
 from django.db.models import F
 
 
-# Register your models here.
 admin.site.register(Cash)
+
+# Disable the "Delete" action and batch action
+admin.site.disable_action('delete_selected')
 
 # Admin settings
 admin.site.site_header = "EpPos Administration"
@@ -15,10 +17,6 @@ admin.site.site_title = "EpPos Administration"
 # Admin Models
 @admin.register(Setting)
 class SettingAdmin(admin.ModelAdmin):
-
-    # Deleting a setting is quite confusing
-    def has_delete_permission(self, *args, **kwargs):
-        return False
 
     # List Display Page Configuration
     list_display = (
@@ -64,6 +62,9 @@ class ProductAdmin(admin.ModelAdmin):
     The Admin Configuration for the model Product.
     """
 
+    # Allow delete
+    actions = ['delete_selected']
+
     # List Page Display Configuration
     list_display = (
         'name',
@@ -91,11 +92,20 @@ class ProductAdmin(admin.ModelAdmin):
     )
 
 
+# Safe deletion of orders
+def safe_delete_order(modeladmin, request, queryset):
+    queryset.filter(done=True).delete()
+safe_delete_order.short_description = "Delete completed orders"
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     """"
     Admin Site Configuration for Order Model
     """
+
+    # Add custom delete-if-not-done action
+    actions = [safe_delete_order]
 
     # List page display configuration
     list_display = (
