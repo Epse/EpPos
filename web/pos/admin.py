@@ -95,7 +95,7 @@ class ProductAdmin(admin.ModelAdmin):
 # Safe deletion of orders
 def safe_delete_order(modeladmin, request, queryset):
     queryset.filter(done=True).delete()
-safe_delete_order.short_description = "Delete completed orders"
+safe_delete_order.short_description = "Delete completed orders" #NOQA
 
 
 @admin.register(Order)
