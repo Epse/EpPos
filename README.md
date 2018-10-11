@@ -18,7 +18,7 @@ Run `docker-compose up -d --build`.
 Wait for it to complete and run `docker-compose run web ./manage.py createsuperuser` and follow the prompts to create an admin account.
 Go to `localhost` in your browser and log in!
 
-If you need help with this, you can send me an email.
+If you need help with this, you can just create an issue. Please do search through previous issues though.
 
 ## Known "issues"
 - There is a limitation in the total value of an order. It cannot exceed 10 digits, counting decimal places. If someone runs into this: congratulations, I'll have to update this.
