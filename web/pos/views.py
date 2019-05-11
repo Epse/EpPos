@@ -125,6 +125,12 @@ def print_current_order(request):
 
 
 @login_required
+def order_amount(request):
+    _, current_order, _ = helper.setup_handling(request)
+    return HttpResponse(current_order.total_price)
+
+
+@login_required
 def order_add_product(request, product_id):
     _, current_order, _ = helper.setup_handling(request)
 
