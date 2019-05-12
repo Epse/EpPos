@@ -245,11 +245,10 @@ def payment_card(request):
     payment_error = False
     cash, current_order, currency = helper.setup_handling(request)
 
-    for product in helper.product_list_from_order(current_order):
-        current_order.done = True
-        current_order.save()
-        current_order = Order.objects.create(user=request.user)
-        succesfully_payed = True
+    current_order.done = True
+    current_order.save()
+    current_order = Order.objects.create(user=request.user)
+    succesfully_payed = True
 
     total_price = current_order.total_price
     list = Order_Item.objects.filter(order=current_order)
