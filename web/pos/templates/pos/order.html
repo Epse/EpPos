@@ -358,6 +358,14 @@
              app.cashmodal();
          });
 
+         $(document).ready(function() {
+             // This shallst load /addition in its div
+             $('#resetcashpopover').popover({html:true});
+         });
+
+         $('#CodeModal').on('shown.bs.modal', function (e) {
+             $('#codeInput').focus();
+         })
         </script>
     </body>
 </html>

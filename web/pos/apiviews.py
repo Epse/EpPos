@@ -4,12 +4,12 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.http import (HttpResponse,
                          JsonResponse,
-                         HttpResponseForbidden,
                          HttpResponseBadRequest)
 from rest_framework import status
 from .serializers import OrderSerializer, OrderItemSerializer
-from .helper import get_current_user_order, get_currency, get_can_negative_stock
-from .models import Product, Order, Cash, Order_Item
+from .helper import (get_current_user_order,
+                     get_can_negative_stock)
+from .models import Product, Order_Item
 
 
 @csrf_exempt
@@ -66,8 +66,8 @@ def current_order_item(request, item_id):
 
         if order.total_price < 0:
             logging.error("prices below 0! "
-                        "You might be running in to the "
-                        "10 digit total order price limit")
+                          "You might be running in to the "
+                          "10 digit total order price limit")
             order.total_price = 0
 
         order.save()
@@ -83,7 +83,7 @@ def current_order_item(request, item_id):
         if product.stock_applies:
             if product.stock < 1 and not get_can_negative_stock():
                 return JsonResponse('{message: "Insufficient stock"}',
-                                status=status.HTTP_400_BAD_REQUEST)
+                                    status=status.HTTP_400_BAD_REQUEST)
 
             product.stock -= 1
             product.save()
