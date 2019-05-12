@@ -33,8 +33,11 @@ urlpatterns = [
     url(r'^stock/?$', views.view_stock, name='view_stock'),
 
     # API URL's
-    url(r'^api/orders/current/?$', apiviews.current_order,
-        name='api_current_order'),
+    path('api/orders/current/', apiviews.current_order,
+         name='api_current_order'),
     path('api/orders/current/items/', apiviews.current_order_items,
-         name='api_current_order_items')
+         name='api_current_order_items'),
+    path('api/orders/current/items/<int:item_id>/',
+         apiviews.current_order_item,
+         name='api_product'),
 ]

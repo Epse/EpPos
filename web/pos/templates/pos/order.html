@@ -79,7 +79,7 @@
                         <a class="nav-link active" href="#" data-toggle="modal" data-target="#CodeModal">Enter Code</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#" data-toggle="modal" data-target="#clearModal" onclick="updateCashModal();">Clear Order</a>
+                        <a class="nav-link active" href="#" data-toggle="modal" data-target="#clearModal">Clear Order</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -94,8 +94,8 @@
                     <li class="nav-item">
                         <a id="resetcashpopover" tabindex="0" class="nav-link active dropdown-toggle" role="button" data-toggle="popover" data-placement="bottom"  title="Reset Cash"
                            style="cursor:pointer;"
-                           data-content="<div class='row'><div class='col-md-12'><input type='number' value='0' name='resetcashamount' id='resetcashinput' step='0.01'></a></div></div>
-                               <div class='row' style='margin-top:1em;'><div class='col-md-12'><button type='button' class='btn btn-primary' onclick='resetCash();'>Reset</button></div></div>">
+                           data-content="<div class='row'><div class='col-md-12 form-group'><input class='form-control' type='number' value='0' id='resetcashinput' step='0.01'></a></div></div>
+                               <div class='row' style='margin-top:1em;'><div class='col-md-12'><button type='button' class='btn btn-primary' onclick='app.resetCash();'>Reset</button></div></div>">
                             Reset Cash
                         </a>
                     </li>
@@ -116,198 +116,248 @@
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             Successfully reset the cash amount to {{ currency }}<span id="cashresetamount"></span>.
         </div>
-        <div id="app" class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="row">
-                        {% if list %}
-                        {% for product in list %}
-                        <div class="col-sm-6 col-md-4" style="padding-top: 5px; padding-bottom: 5px;">
-                            <a role="button" class="btn btn-primary btn-block {{ product.colour }}"
-                               href="#"
-                               onclick="addProduct({{ product.id }});">
-                                {{ product.name }}<br>{{ currency }}{{ product.price }}
-                            </a>
+        <div id="app">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            {% if list %}
+                            {% for product in list %}
+                            <div class="col-sm-6 col-md-4" style="padding-top: 5px; padding-bottom: 5px;">
+                                <a role="button" class="btn btn-primary btn-block {{ product.colour }}"
+                                   href="#"
+                                   onclick="app.addProduct({{ product.id }});">
+                                    {{ product.name }}<br>{{ currency }}{{ product.price }}
+                                </a>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
                         </div>
-                        {% endfor %}
-                        {% endif %}
                     </div>
-                </div>
-                <div class="col-sm-6">
-                    <div id="additiondiv">
+                    <div class="col-sm-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in items">
+                                    <td>[[ item.name ]]</td>
+                                    <td>[[ item.price ]]</td>
+                                    <td><button class="btn btn-danger" @click="removeProduct(item.id)">X</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Total</th>
+                                    <td>[[ order.total_price ]]</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="modal" id="CodeModal" tabindex="-1" role="dialog" aria-labelledby="codeModal" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <form action="javascript:void(0);">
+            <div class="modal" id="CodeModal" tabindex="-1" role="dialog" aria-labelledby="codeModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <form action="javascript:void(0);">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Enter by Code</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input id="codeInput" class="form-control" name="code" type="text" value="" autofocus="autofocus" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" @click="scanCode">Add</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal" id="clearModal" tabindex="-1" role="dialog" aria-labelledby="clearModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Enter by Code</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <input id="codeInput" class="form-control" name="code" type="text" value="" autofocus="autofocus" />
+                            <p>
+                                Are you sure you want to clear this order?
+                            </p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" onclick="scancode();">Add</button>
+                            <button class="btn btn-danger" data-dismiss="modal" v-on:click="reset">Clear it</button>
+                            <button class="btn btn-primary" data-dismiss="modal">Cancel</button>
                         </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="modal" id="clearModal" tabindex="-1" role="dialog" aria-labelledby="clearModal" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            Are you sure you want to clear this order?
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" data-dismiss="modal" onclick="reset();">Clear it</button>
-                        <button class="btn btn-primary" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Change modal -->
-        <div class="modal" id="cashModal" tabindex="-1" role="dialog" aria-labelledby="cashModal" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalCenterTitle">Change</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="">
-                            <div class="form-group">
-                                <label for="topay">To pay</label>
-                                <input id="topay" class="form-control" name="" type="number" value="" step="0.01" disabled/>
-                            </div>
-                            <div class="form-group">
-                                <label for="cashgot">Cash received</label>
-                                <input class="form-control" type="number" id="cashgot" step="0.01" autofocus />
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-primary" onclick="calculateChange();">Calculate change</button>
-                            </div>
-                            <div class="form-group">
-                                <label for="change">Change</label>
-                                <input id="change" type="number" class="form-control" disabled/>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="payed('cash');" data-dismiss="modal">Submit</button>
+            <!-- Change modal -->
+            <div class="modal" id="cashModal" tabindex="-1" role="dialog" aria-labelledby="cashModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalCenterTitle">Change</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="">
+                                <div class="form-group">
+                                    <label for="topay">To pay</label>
+                                    <input id="topay" class="form-control" name="" type="number" value="" step="0.01" disabled/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cashgot">Cash received</label>
+                                    <input v-model="cashgot" class="form-control" type="number" id="cashgot" step="0.01" autofocus />
+                                </div>
+                                <div class="form-group">
+                                    <label for="change">Change</label>
+                                    <input id="change" type="number" class="form-control" :value="cashgot - order.total_price" disabled/>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="payed('cash');" data-dismiss="modal">Submit</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <script>
-         $('#cashModal').on('shown.bs.modal', function() {
-             $.get("{% url 'order_get_amount' %}", function(data) {
-                 $('#topay').val(data);
-             });
-         });
-
-         function calculateChange() {
-             toPay = $('#topay').val();
-             got = $('#cashgot').val();
-             $('#change').val(got - toPay);
-         }
-
-         $('#cashgot').on("change paste keyup", calculateChange);
-
-         function addProduct(productID) {
-             $('#additiondiv').load("{% url 'order_add_product' '' %}" + productID);
-             console.log("Ordered number: " + productID);
-         }
-
-         function scancode() {
-             addProduct(document.getElementById('codeInput').value);
-             document.getElementById('codeInput').value = "";
-             document.getElementById('codeInput').focus();
-         }
-
-         function reset() {
-             $('#additiondiv').load("{% url 'reset_order' %}");
-             console.log("Reset addition");
-         }
-
-         function removeProduct(product) {
-             console.log("remove " + product);
-             $('#additiondiv').load("{%url 'order_remove_product' '' %}" + encodeURIComponent(product));
-         }
-
-         function resetCash() {
-             var req = new XMLHttpRequest();
-             req.open('GET', "{% url 'cash' '' %}" + encodeURIComponent($("#resetcashinput").val()), false);
-             req.send(null)
-             console.log('trying to reset cash');
-
-             if (req.status == 200) {
-                 $('#cashresetamount').text(encodeURIComponent($("#resetcashinput").val()));
-                 $('#cashresetdiv').show()
-                 $('#resetcashpopover').popover('hide');
-                 console.log('succesfully reset cash');
-             }
-         }
-
          $(document).ready(function() {
-             // This shallst load /addition in its div
              $('#resetcashpopover').popover({html:true});
-             $('#additiondiv').load("{% url 'addition' %}");
          });
 
          $('#CodeModal').on('shown.bs.modal', function (e) {
              $('#codeInput').focus();
          })
 
-         Vue.config.delimiters = ['[[',']]'];
          var app = new Vue({
+             delimiters: ['[[', ']]'],
              el: '#app',
              data: {
                  order: {},
+                 items: [],
+                 cashgot: 0.0
              },
              methods: {
-                 init: function() {
+                 update_order: function() {
                      fetch("{% url 'api_current_order' %}")
                          .then(res => res.json())
                          .then((out) => {
-                             console.log(out);
                              this.order = out;
+                         });
+                 },
+                 update_items: function() {
+                     fetch("{% url 'api_current_order_items' %}")
+                         .then(res => res.json())
+                         .then((out) => {
+                             this.items = out;
+                         });
+                 },
+                 cashmodal: function() {
+                     $('#cashgot').focus();
+                     console.log(this.order.total_price);
+                     document.getElementById('topay').value = this.order.total_price;
+                 },
+                 removeProduct: function(product_id) {
+                     fetch("/pos/api/orders/current/items/" + encodeURIComponent(product_id) + "/", {method: 'DELETE'})
+                         .then(response => {
+                             if (response.status == 200) {
+                                 response.json().then(json => {
+                                     this.items = json;
+                                 });
+                                 this.update_order();
+                             } else {
+                                 window.alert("Can't remove product");
+                                 console.log(response);
+                             }
+                         });
+                 },
+                 addProduct: function(product_id) {
+                     fetch("/pos/api/orders/current/items/" + encodeURIComponent(product_id) + "/", {method: 'PUT'})
+                         .then(response => {
+                             if (response.status == 404) {
+                                 window.alert("Product not found");
+                             } else if (response.status != 200) {
+                                 console.log(response);
+                                 window.alert(response.json().message);
+                             } else {
+                                 this.update_order();
+                                 // this must be a promise
+                                 response.json().then(json => {
+                                     this.items = json;
+                                 });
+                             }
+                         });
+                 },
+                 resetCash: function() {
+                     var value = document.getElementById('resetcashinput').value;
+                     fetch("{% url 'cash' '' %}" + encodeURIComponent(value))
+                         .then(response => {
+                             if (response.status != 200) {
+                                 window.alert("Can't reset cash");
+                                 console.log(response);
+                             } else {
+                                 $('#cashresetamount').text(encodeURIComponent(value));
+                                 $('#cashresetdiv').show()
+                                 $('#resetcashpopover').popover('hide');
+                             }
                          });
                  },
                  payed: function(method) {
                      if (confirm("Do you want to print the addition?")) {
                          console.log(this.order.id);
                          window.open("{% url 'print_order' '0' %}" + this.order.id, "_blank").focus();
-                        if (method == "cash") {
-                            $('#additiondiv').load("{% url 'payment_cash' %}");
-                        } else if (method == "card") {
-                            $('#additiondiv').load("{% url 'payment_card' %}");
-                        }
-                        console.log("Person payed");
                      }
+
+                     if (method == "cash") {
+                         $('#additiondiv').load("{% url 'payment_cash' %}");
+                     } else if (method == "card") {
+                         $('#additiondiv').load("{% url 'payment_card' %}");
+                     }
+                     console.log("Person payed");
                  },
+                 scanCode: function() {
+                     this.addProduct(document.getElementById('codeInput').value);
+                     document.getElementById('codeInput').value = "";
+                     document.getElementById('codeInput').focus();
+                 },
+                 reset: function() {
+                     fetch("{% url 'api_current_order' %}", {method: 'delete'})
+                         .then(response => {
+                             if (response.status == 200) {
+                                 window.alert("Order cleared");
+                             } else {
+                                 window.alert("Can't clear order");
+                                 console.log(response);
+                             }
+                         });
+                     this.update_order();
+                     this.update_items();
+                 }
              },
              created() {
-                 this.init();
+                 this.update_order();
+                 this.update_items();
              }
          });
+
+         $('#cashModal').on('shown.bs.modal', function() {
+             app.cashmodal();
+         });
+
         </script>
     </body>
 </html>
