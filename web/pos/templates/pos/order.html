@@ -228,7 +228,7 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" onclick="payed('cash');" data-dismiss="modal">Submit</button>
+                            <button type="button" class="btn btn-primary" @click="payed('cash');" data-dismiss="modal" :disabled="cashgot < order.total_price">Submit</button>
                         </div>
                     </div>
                 </div>
