@@ -323,9 +323,29 @@
                      }
 
                      if (method == "cash") {
-                         $('#additiondiv').load("{% url 'payment_cash' %}");
+                         fetch("{% url 'api_cash_payment' %}").then(response => {
+                             if (response.status != 200) {
+                                 window.alert("Couldn't pay");
+                                 console.log(response);
+                             } else {
+                                 response.json().then(json => {
+                                     window.alert("Added " + json.added + " to the register");
+                                 });
+                                 this.update_order();
+                                 this.update_items();
+                             }
+                         });
                      } else if (method == "card") {
-                         $('#additiondiv').load("{% url 'payment_card' %}");
+                         fetch("{% url 'api_card_payment' %}").then(response => {
+                             if (response.status != 200) {
+                                 window.alert("Couldn't pay");
+                                 console.log(response);
+                             } else {
+                                 window.alert("Successfully paid.");
+                                 this.update_order();
+                                 this.update_items();
+                             }
+                         });
                      }
                      console.log("Person payed");
                  },

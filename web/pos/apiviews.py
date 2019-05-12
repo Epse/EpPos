@@ -8,8 +8,9 @@ from django.http import (HttpResponse,
 from rest_framework import status
 from .serializers import OrderSerializer, OrderItemSerializer
 from .helper import (get_current_user_order,
-                     get_can_negative_stock)
-from .models import Product, Order_Item
+                     get_can_negative_stock,
+                     product_list_from_order)
+from .models import Product, Order_Item, Order, Cash
 
 
 @csrf_exempt
@@ -103,3 +104,37 @@ def current_order_item(request, item_id):
 
     else:
         return HttpResponseBadRequest()
+
+
+def cash_payment(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+
+    order = get_current_user_order(request.user.username)
+    cash, _ = Cash.objects.get_or_create(id=0)
+
+    amount_added = 0
+
+    for product in product_list_from_order(order):
+        cash.amount += product.price
+        amount_added += product.price
+        cash.save()
+
+    order.done = True
+    order.save()
+    Order.objects.create(user=request.user)
+
+    return JsonResponse({'added': amount_added})
+
+
+def card_payment(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+
+    order = get_current_user_order(request.user.username)
+
+    order.done = True
+    order.save()
+    Order.objects.create(user=request.user)
+
+    return HttpResponse()

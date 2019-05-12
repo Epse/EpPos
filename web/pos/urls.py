@@ -40,4 +40,6 @@ urlpatterns = [
     path('api/orders/current/items/<int:item_id>/',
          apiviews.current_order_item,
          name='api_product'),
+    path('api/pay/card/', apiviews.card_payment, name='api_card_payment'),
+    path('api/pay/cash/', apiviews.cash_payment, name='api_cash_payment'),
 ]
