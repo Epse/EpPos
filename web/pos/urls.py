@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^order/remove/(?P<product_id>[0-9]*)/?$',
         views.order_remove_product, name="order_remove_product"),
     url(r'^order/reset/?$', views.reset_order, name='reset_order'),
+    url(r'^order/amount/?$', views.order_amount, name='order_get_amount'),
     url(r'^order/?$', views.order, name='order'),
     url(r'^pay/card/$', views.payment_card, name='payment_card'),
     url(r'^pay/cash/$', views.payment_cash, name='payment_cash'),

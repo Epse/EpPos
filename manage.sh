@@ -23,4 +23,14 @@ function redo() {
     setup
 }
 
+function cleardb() {
+	rm -rf web/db
+}
+
+function fresh() {
+	clean
+	cleardb
+	setup
+}
+
 $@
