@@ -1,4 +1,5 @@
 Django~=2.1
 gunicorn~=19.5.0
+gunicorn>=19.5.0
 Pillow~=4.3.0
 djangorestframework~=3.9.4
