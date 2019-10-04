@@ -248,6 +248,8 @@
 	       }
 
 	       function payed(method) {
+             if (!confirm('Do you want to process a payment?'))
+                 return;
              if (confirm("Do you want to print the addition?")) {
                  window.open("{% url 'print_current_order' %}", "_blank").focus();
              }
