@@ -336,6 +336,8 @@
                              }
                          });
                      } else if (method == "card") {
+                         if (!confirm('Are you sure?'))
+                             return;
                          fetch("{% url 'api_card_payment' %}").then(response => {
                              if (response.status != 200) {
                                  window.alert("Couldn't pay");

@@ -6,7 +6,7 @@ function up() {
 
 function setup() {
 	mkdir -p web/db
-    docker-compose up -d --build && docker-compose exec web ./manage.py createsuperuser
+    docker-compose up -d --force-recreate && docker-compose exec web ./manage.py createsuperuser
 }
 
 function stop() {
