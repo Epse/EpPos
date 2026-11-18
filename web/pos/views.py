@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+from django.utils.http import url_has_allowed_host_and_scheme
 from .models import Product, Order, Cash, Order_Item
 from . import helper
 
@@ -27,8 +28,13 @@ def login(request):
 
     if user is not None:
         auth_login(request, user)
-        return redirect(request.GET['next']
-                        if request.GET['next'] else 'order')
+        next_url = request.GET.get('next')
+        if next_url and url_has_allowed_host_and_scheme(
+                next_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure()):
+            return redirect(next_url)
+        return redirect('order')
     else:
         return render(request, 'registration/login.html',
                       context={'error': True})
